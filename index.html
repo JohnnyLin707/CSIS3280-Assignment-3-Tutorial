@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assignment 3 Tutorial — How It Was Built</title>
+<style>
+  :root{
+    --blue:#0d6efd; --ink:#1f2933; --muted:#5b6b79; --line:#e3e8ee;
+    --bg:#f7f9fb; --card:#ffffff; --code:#0f172a; --codeInk:#dbe4f0;
+    --add:#0a7d43; --rep:#b45309; --keep:#64748b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px 80px}
+  header.top{background:linear-gradient(135deg,#0b5ed7,#0d6efd);color:#fff;padding:36px 0 30px;margin-bottom:28px}
+  header.top .wrap{padding-bottom:0}
+  header.top h1{margin:0 0 8px;font-size:28px}
+  header.top p{margin:0;opacity:.92}
+  .langswitch{display:flex;gap:10px;margin-bottom:18px}
+  .langswitch a{padding:6px 14px;border-radius:20px;text-decoration:none;font-size:14px;border:1px solid var(--line);background:#fff;color:var(--muted)}
+  .langswitch a.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  nav.toc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:28px}
+  nav.toc b{display:block;margin-bottom:6px}
+  nav.toc a{color:var(--blue);text-decoration:none;margin-right:16px;font-size:14px;white-space:nowrap}
+  section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin-bottom:24px}
+  h2{margin:0 0 14px;font-size:20px;padding-bottom:10px;border-bottom:2px solid var(--line)}
+  h3{margin:22px 0 8px;font-size:16px}
+  p,li{font-size:14.5px}
+  code{background:#eef2f7;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#0b5ed7}
+  pre{background:var(--code);color:var(--codeInk);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.6}
+  pre code{background:none;border:none;color:inherit;padding:0}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:#eef2f7}
+  .tag{display:inline-block;font-size:12px;border-radius:4px;padding:1px 8px;margin-right:6px;color:#fff;white-space:nowrap}
+  .add{background:var(--add)} .rep{background:var(--rep)} .keep{background:var(--keep)}
+  .note{background:#fff8e6;border:1px solid #f1d38a;border-radius:8px;padding:10px 14px;font-size:13.5px;margin:10px 0}
+  .path{color:var(--muted);font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:30px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>Assignment 3 Tutorial — Building the PHP Web App (Auth + Validated Form + CSV File I/O)</h1>
+    <p>This walkthrough explains exactly how the project was completed: which files were modified, what changed in each one, which original code was replaced (and why, and where), and how the static pages in <code>html_examples</code> were adapted into the working templates in <code>templates</code>.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="langswitch">
+    <a class="on" href="index.html">English</a>
+    <a href="tutorial-zh.html">中文教程</a>
+  </div>
+
+  <nav class="toc">
+    <b>Contents</b>
+    <a href="#overview">1. Overview</a>
+    <a href="#flow">2. Request Flow</a>
+    <a href="#files">3. File-by-File Changes</a>
+    <a href="#deletions">4. What Was Replaced &amp; Why</a>
+    <a href="#examples">5. From html_examples to templates</a>
+    <a href="#validation">6. Validation Rules</a>
+    <a href="#run">7. Run &amp; Verify</a>
+    <a href="#submit">8. Submission Notes</a>
+  </nav>
+
+  <!-- ====================================================== -->
+  <section id="overview">
+    <h2>1. Overview &amp; Final Structure</h2>
+    <p>The assignment is a three-page application: a <b>home page (login)</b>, a <b>data-entry form</b> (admin only) and a <b>data view</b> (any logged-in user), backed by <code>data/students.csv</code>. It follows the three-layer structure used in the class demos:</p>
+    <pre><code>Browser request
+   └─&gt; public/index.php        Front controller: session_start + requires + route by ?action=
+         └─&gt; src/action_controller.php   Action controller: picks the view (showHome/showForm/showData/processForm)
+               └─&gt; templates/*.php      View templates: each requires header.php to compose the page</code></pre>
+<pre><code>assign3_starter/
+├── public/
+│   └── index.php                 ← Front controller (single entry point)
+├── src/
+│   ├── sessionManager.php        ← login, session, authN &amp; authZ (isAdmin added)
+│   ├── file_utility.php          ← readData / writeData
+│   ├── validation.php            ← validate() form validation
+│   └── action_controller.php     ← showHome / showForm / showData / processForm
+├── templates/
+│   ├── header.php                ← header + navigation (shared by all pages)
+│   ├── home.php                  ← home page (login form by default)
+│   ├── form.php                  ← data-entry form
+│   └── data.php                  ← data view
+├── data/
+│   └── students.csv              ← data file (absent at startup, created on first write)
+└── html_examples/                ← static reference pages (read-only, not executed)</code></pre>
+    <p>Test accounts (provided in <code>getUsers()</code>, must not be changed): <code>admin / Adm@3280</code> and <code>user / User@3280</code>.</p>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="flow">
+    <h2>2. Request Flow (Routing Table)</h2>
+    <p><code>index.php</code> routes with <code>switch ($action)</code>, matching the week05 demo (CH16) front-controller style:</p>
+    <table>
+      <tr><th>URL</th><th>Handler</th><th>Result</th></tr>
+      <tr><td><code>/</code> or anything else</td><td><code>default → showHome('')</code></td><td>Login form when logged out (Fig. 1); authorization text when logged in (Fig. 4)</td></tr>
+      <tr><td><code>/?action=login</code> POST</td><td><code>processLogin()</code></td><td>admin → form page (Fig. 3); user → data page (Fig. 12); failure → home + error (Fig. 2)</td></tr>
+      <tr><td><code>/?action=login</code> GET</td><td><code>showHome('')</code></td><td>Same as home</td></tr>
+      <tr><td><code>/?action=form</code> GET / POST</td><td><code>showForm([])</code> / <code>processForm(DATA_FILE)</code></td><td>Admin only; user or guest is sent back home (Fig. 12 note)</td></tr>
+      <tr><td><code>/?action=data</code></td><td><code>showData(readData(DATA_FILE))</code></td><td>Visible to any logged-in user (Figs. 5, 9, 12)</td></tr>
+      <tr><td><code>/?action=logout</code></td><td><code>logout()</code></td><td>Clears <code>$_SESSION</code>, back home (Fig. 11)</td></tr>
+    </table>
+    <div class="note">Why <code>require</code> paths use <code>__DIR__</code>: relative paths starting with <code>../</code> are resolved only against the PHP process working directory, which breaks if the server is started from another folder. <code>__DIR__</code> always points at the file's own directory. The data file path is defined once as <code>DATA_FILE</code> in index.php, so <code>processLogin()</code> (whose signature cannot change) can also use it.</div>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="files">
+    <h2>3. File-by-File Changes (9 files)</h2>
+    <p>Ground rule: <b>every original assignment comment was kept</b>; new code is written beneath the comments and marked with <code>【补全】</code> Chinese comments.</p>
+
+    <h3>3.1 <code>public/index.php</code> — Front controller</h3>
+    <p class="path">Original state: 29 lines of comments only, zero executable code.</p>
+    <ul>
+      <li><span class="tag add">added</span>under <code>// start the session</code>: <code>session_start();</code></li>
+      <li><span class="tag add">added</span>under <code>// require all the necessary files</code>: four <code>require_once __DIR__ . '/../src/xxx.php';</code></li>
+      <li><span class="tag add">added</span><code>define('DATA_FILE', __DIR__ . '/../data/students.csv');</code> (the CSV does not exist at startup; created by <code>writeData()</code> on first successful submit, Fig. 10)</li>
+      <li><span class="tag add">added</span><code>$action = filter_input(INPUT_GET, 'action');</code> plus a switch with 5 cases (login / form / data / logout / default)</li>
+      <li><span class="tag keep">kept</span>all original comments, code placed under each one</li>
+    </ul>
+
+    <h3>3.2 <code>src/sessionManager.php</code> — login / session / authN / authZ</h3>
+    <p class="path">Original state: everything coded except <code>processLogin()</code>.</p>
+    <ul>
+      <li><span class="tag add">added</span>location: inside <code>processLogin()</code>, in the blank after <code>$_SESSION['username'] = $username;</code> and beneath the original comments:<pre><code>// admin → form page (Fig. 3); user → data page (Fig. 12)
+if ($username == 'admin') {
+    showForm([]);
+} else {
+    showData(readData(DATA_FILE));
+}</code></pre></li>
+      <li><span class="tag add">added</span>at the end of the file, after <code>logout()</code>, a new authorization helper used by the nav and the form route:<pre><code>function isAdmin(): bool
+{
+    return isLoggedIn() &amp;&amp; usernameFromSession() == 'admin';
+}</code></pre></li>
+      <li><span class="tag keep">kept</span>every other function untouched; nothing deleted</li>
+    </ul>
+
+    <h3>3.3 <code>src/file_utility.php</code> — file I/O</h3>
+    <p class="path">Original state: two empty functions with comments.</p>
+    <ul>
+      <li><span class="tag add">added</span><code>readData()</code>: <code>file_exists()</code> check first — missing file returns <code>[]</code> (which triggers the Fig. 5 message); otherwise <code>fopen(..., 'r')</code> + <code>fgetcsv</code> loop building an array of arrays, skipping empty lines</li>
+      <li><span class="tag add">added</span><code>writeData()</code>: <code>file_exists()</code> check — <b>if missing, <code>touch()</code> creates it first</b>, then <code>file_put_contents($fileName, $str . PHP_EOL, FILE_APPEND | LOCK_EX)</code> appends one line</li>
+    </ul>
+    <div class="note">Why create-then-append? The starter comment says "if the file does not exist, it should not write any data", but the assignment also requires students.csv to be absent at startup while Fig. 10 shows data saved after the first submit. Taking the figures as authoritative, the file is created on demand; the reasoning is documented in the code comments.</div>
+
+    <h3>3.4 <code>src/validation.php</code> — form validation</h3>
+    <p class="path">Original state: <code>validate()</code> contained only comments. The assignment asks for the PHP filter extension wherever possible.</p>
+    <ul>
+      <li><span class="tag add">added</span>read the five fields with <code>filter_input(INPUT_POST, ...)</code>, then apply the rules with the exact Fig. 6 messages:<pre><code>$errors = [];
+if (empty($studentName))  { $errors[] = 'Please enter your fullname'; }
+if (!filter_var($studentID, FILTER_VALIDATE_REGEXP,
+        ['options' =&gt; ['regexp' =&gt; '/^\d{10}$/']])) {
+    $errors[] = 'ID should be ten digit number';
+}
+if (!filter_var($studentEmail, FILTER_VALIDATE_EMAIL)) {
+    $errors[] = 'Please enter the correct email address';
+}
+if (!filter_var($studentTerm, FILTER_VALIDATE_REGEXP,
+        ['options' =&gt; ['regexp' =&gt; '/^(Fall|Winter|Summer) 20(2[0-6])$/']])) {
+    $errors[] = 'Please enter the correct term between Winter 2020 until Fall 2026';
+}
+if (empty($studentDept))  { $errors[] = 'Please select one of the departments'; }
+return $errors;</code></pre></li>
+      <li><span class="tag keep">kept</span>original comments and the closing <code>?&gt;</code></li>
+    </ul>
+
+    <h3>3.5 <code>src/action_controller.php</code> — action controller</h3>
+    <p class="path">Original state: four empty functions (signatures must not change).</p>
+    <ul>
+      <li><span class="tag add">added</span><code>showHome / showForm / showData</code>: each <code>require_once __DIR__ . '/../templates/xxx.php';</code> (templates run inside function scope, so the parameters <code>$loginError / $errors / $dataArray</code> are directly visible in the templates)</li>
+      <li><span class="tag add">added</span><code>processForm($dataFileName)</code>: <code>validate()</code> first; on errors → <code>showForm($errors)</code> (Fig. 6); otherwise build one CSV line <code>Name,ID,Email,Dept,Status</code> (the 5 fields of Fig. 10) → <code>writeData()</code> → <code>$GLOBALS['formSaved'] = true;</code> → <code>showForm([])</code> (Fig. 8: disabled controls + confirmation text)</li>
+    </ul>
+    <div class="note">Why <code>$GLOBALS['formSaved']</code>? The success view needs the same form template but disabled, and <code>showForm($errors)</code>'s signature cannot change — so a global flag is set and read in form.php via <code>$GLOBALS['formSaved'] ?? false</code>. Also note the CSV has no Term field: Fig. 10 stores 5 columns and, per Fig. 9, the "Term" table column actually shows the email.</div>
+
+    <h3>3.6 <code>templates/header.php</code> — header &amp; navigation (the only 2 original-code replacements in the project)</h3>
+    <ul>
+      <li><span class="tag rep">replaced</span>location: line 14, <code>&lt;title&gt;Put title here&lt;/title&gt;</code> → <code>&lt;title&gt;&lt;?= $pageTitle ?&gt;&lt;/title&gt;</code>. Reason: static placeholder; every template already defines <code>$pageTitle</code> that nothing used — it must be printed dynamically or every page shares the same dummy title.</li>
+      <li><span class="tag rep">replaced</span>location: the username area, <code>&lt;strong&gt;I am nobody&lt;/strong&gt;</code> → <code>&lt;strong&gt;&lt;?= usernameFromSession() ?&gt;&lt;/strong&gt;</code>. Reason: the real logged-in name must be shown (admin in Fig. 3, user in Fig. 12).</li>
+      <li><span class="tag add">added</span>three conditional blocks wrapping the existing list items (their HTML untouched):<pre><code>&lt;?php if (isAdmin()): ?&gt;      &lt;!-- Input Form link: admin only (Fig. 12) --&gt;
+&lt;?php if (isLoggedIn()): ?&gt;   &lt;!-- Data link: any logged-in user --&gt;
+&lt;?php if (isLoggedIn()): ?&gt;   &lt;!-- username + Logout block: hidden when logged out (Fig. 1) --&gt;</code></pre></li>
+      <li><span class="tag keep">kept</span>the <code>?? ''</code> variable fallbacks, the Bootstrap CDN link, and all original comments (including the "folliwng" typo)</li>
+    </ul>
+
+    <h3>3.7 <code>templates/home.php</code> — home page</h3>
+    <ul>
+      <li><span class="tag keep">kept</span>the top setup lines (<code>$pageTitle</code>, <code>$homeLink='active'</code>, <code>require_once 'header.php'</code>) and all original comments</li>
+      <li><span class="tag add">added</span><code>&lt;h1&gt;Assignment 3 Homepage's of …&lt;/h1&gt;</code> (Fig. 1 heading — replace the name/ID placeholder with your own)</li>
+      <li><span class="tag add">added</span><code>if (!isLoggedIn())</code> branch: error box when <code>!empty($loginError)</code> (Fig. 2) plus the login form; the <code>else</code> branch shows the Fig. 4 authorization text</li>
+    </ul>
+
+    <h3>3.8 <code>templates/form.php</code> — entry form</h3>
+    <ul>
+      <li><span class="tag keep">kept</span>top setup, the provided <code>$deptArray</code>, and all original comments</li>
+      <li><span class="tag add">added</span>sticky form: fields read back with <code>filter_input(INPUT_POST, ...)</code> and echoed into <code>value</code>/<code>selected</code>/<code>checked</code> so a failed validation does not wipe the input</li>
+      <li><span class="tag add">added</span><code>$formSaved = $GLOBALS['formSaved'] ?? false;</code> and <code>$disabled = $formSaved ? 'disabled' : '';</code> — every control gets <code>&lt;?= $disabled ?&gt;</code> (Fig. 8)</li>
+      <li><span class="tag add">added</span>error box (<code>if (!empty($errors))</code> + <code>foreach</code>), select options generated from <code>$deptArray</code>, confirmation <code>&lt;p&gt;The information will be saved in our file&lt;/p&gt;</code> below the form (Fig. 8), and <code>value="Submit"</code> on the button</li>
+    </ul>
+
+    <h3>3.9 <code>templates/data.php</code> — data view</h3>
+    <ul>
+      <li><span class="tag keep">kept</span>top setup and all original comments</li>
+      <li><span class="tag add">added</span><code>if (empty($dataArray))</code> → <code>&lt;h1&gt;Currently our data is still empty. Please fill out the form&lt;/h1&gt;</code> (Fig. 5); <code>else</code> → the Fig. 9 table with <code>foreach ($dataArray as $row)</code> and a <code>$number++</code> index</li>
+    </ul>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="deletions">
+    <h2>4. What Original Code Was Replaced, Where, and Why</h2>
+    <p>Short answer: <b>no original assignment comment was ever deleted</b>. The only original content replaced in the whole project is <b>2 static placeholders</b> inside <code>templates/header.php</code>:</p>
+    <table>
+      <tr><th>#</th><th>File &amp; exact location</th><th>Original</th><th>Replaced with</th><th>Why it had to change</th></tr>
+      <tr>
+        <td>1</td>
+        <td><code>templates/header.php</code> line 14 (inside <code>&lt;title&gt;</code>)</td>
+        <td><code>Put title here</code></td>
+        <td><code>&lt;?= $pageTitle ?&gt;</code></td>
+        <td>Static placeholder. Every starter template defines <code>$pageTitle</code> but nothing used it; without this change every page shows the same dummy title, contradicting the intent of the provided variable.</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><code>templates/header.php</code> top-right username area (after "You are logged in as:")</td>
+        <td><code>&lt;strong&gt;I am nobody&lt;/strong&gt;</code></td>
+        <td><code>&lt;strong&gt;&lt;?= usernameFromSession() ?&gt;&lt;/strong&gt;</code></td>
+        <td>Hard-coded fake name. Figs. 3/12 require the real session username (admin / user).</td>
+      </tr>
+    </table>
+    <p>Everything else was <b>completion</b>, not deletion:</p>
+    <ul>
+      <li><code>public/index.php</code>, <code>src/action_controller.php</code>, <code>src/file_utility.php</code>, <code>src/validation.php</code>: the originals were <b>comment-only skeletons</b> (no executable code); implementations were written beneath the comments, which were kept verbatim.</li>
+      <li><code>src/sessionManager.php</code>: only the blank inside <code>processLogin()</code> was filled and <code>isAdmin()</code> appended; everything else untouched.</li>
+      <li><code>templates/home.php / form.php / data.php</code>: all original comments kept (including the provided <code>$deptArray</code>); new code written after the positions the comments point to.</li>
+    </ul>
+    <div class="note">The assignment forbids changing provided function signatures — none were changed and no function was removed. Where extra information had to flow (data file path, "saved" flag), constants (<code>DATA_FILE</code>) or a global flag (<code>$GLOBALS['formSaved']</code>) were used instead.</div>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="examples">
+    <h2>5. From html_examples to templates (making the static code work)</h2>
+    <p>The five files in <code>html_examples/</code> are <b>static renderings</b> showing what the final HTML should look like; <code>templates/</code> holds the dynamic versions. The mapping:</p>
+    <table>
+      <tr><th>html_examples file</th><th>Content</th><th>Goes to</th></tr>
+      <tr><td><code>template_header.html</code></td><td>Header part (nav + user area)</td><td><code>templates/header.php</code> (starter already gives the body; only conditionals + dynamic output were needed)</td></tr>
+      <tr><td><code>home_complete.html</code></td><td>Complete home = header + home composed</td><td>Used to verify the header.php + home.php composition matches</td></tr>
+      <tr><td><code>template_home.html</code></td><td>Lower half of home (h1 + error box + login form)</td><td>Body of <code>templates/home.php</code></td></tr>
+      <tr><td><code>template_form.html</code></td><td>Lower half of form (error box + form)</td><td>Body of <code>templates/form.php</code></td></tr>
+      <tr><td><code>template_data.html</code></td><td>Lower half of data page (h1 + table)</td><td>Body of <code>templates/data.php</code></td></tr>
+    </table>
+
+    <h3>The 4-step recipe (static HTML → working PHP template)</h3>
+    <ol>
+      <li><b>Locate</b> the static block you need (error box, form, table, nav items) in html_examples.</li>
+      <li><b>Paste</b> it into <code>templates/xxx.php</code> after <code>require_once 'header.php';</code> and before the closing <code>&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</code>. At this point it already renders statically.</li>
+      <li><b>Make the data dynamic</b>: swap hard-coded sample values for <code>&lt;?= $var ?&gt;</code>; replace repeated lines (options, table rows, error li) with a <code>foreach</code>.</li>
+      <li><b>Add control structures</b>: wrap blocks in <code>&lt;?php if ...: ?&gt; ... &lt;?php endif; ?&gt;</code> to control visibility / selected / checked / disabled.</li>
+    </ol>
+
+    <h3>Why pasting alone already works</h3>
+    <ul>
+      <li>Templates are pulled in by <code>showHome()/showForm()/showData()</code> via <code>require</code>, so they execute in <b>function scope</b> — the parameters <code>$loginError / $errors / $dataArray</code> are directly usable without extra plumbing.</li>
+      <li><code>header.php</code> sits in the same directory; <code>require_once 'header.php'</code> falls back to the calling script's directory, so it always resolves.</li>
+      <li><code>isLoggedIn() / isAdmin() / usernameFromSession()</code> are global functions, callable from any template.</li>
+      <li>CSS comes from the Bootstrap CDN and links start with <code>/</code> (site root = public/), which is why the server must run as <code>php -S localhost:3000 -t public</code>.</li>
+    </ul>
+
+    <h3>Per-template adaptation table</h3>
+    <table>
+      <tr><th>Target template</th><th>Source lines</th><th>Adaptations (sample → working)</th></tr>
+      <tr>
+        <td><code>home.php</code></td>
+        <td><code>template_home.html</code> line 3 (h1), lines 15–48 (formLogin block); <code>home_complete.html</code> lines 65–71 (<code>form-control is-invalid</code> error box)</td>
+        <td>Wrap the error box in <code>if (!empty($loginError))</code> and print <code>&lt;?= $loginError ?&gt;</code> instead of "Error message 1"; wrap h1+form in <code>if (!isLoggedIn())</code>, add the Fig. 4 text in the <code>else</code> branch.</td>
+      </tr>
+      <tr>
+        <td><code>form.php</code></td>
+        <td><code>template_form.html</code> lines 3–9 (error box), 11–65 (form)</td>
+        <td>(1) error box in <code>if (!empty($errors))</code> with <code>foreach ($errors as $error)</code>; (2) add <code>value="&lt;?= $studentXxx ?&gt;"</code> to each input; (3) replace the three static <code>&lt;option&gt;</code>s with <code>foreach ($deptArray as $code =&gt; $name)</code> plus <code>selected</code>; (4) radios get a <code>checked</code> test; (5) every control gets <code>&lt;?= $disabled ?&gt;</code>; (6) submit button gets <code>value="Submit"</code> (green button, Fig. 3).</td>
+      </tr>
+      <tr>
+        <td><code>data.php</code></td>
+        <td><code>template_data.html</code> line 3 (h1), 5–34 (table)</td>
+        <td>Replace the two sample <code>&lt;tr&gt;</code>s with <code>foreach ($dataArray as $row)</code> printing <code>$row[0]…$row[4]</code> and a <code>$number++</code> index; wrap the table in the <code>else</code> branch, empty branch prints the Fig. 5 heading.</td>
+      </tr>
+      <tr>
+        <td><code>header.php</code></td>
+        <td><code>template_header.html</code> / <code>home_complete.html</code> lines 43–58 (user area)</td>
+        <td>Starter already provides the skeleton: only 3 conditional wraps + 2 placeholder replacements (see 3.6).</td>
+      </tr>
+    </table>
+    <div class="note">Most common pitfall: <code>template_form.html</code> uses full names as option values (<code>&lt;option value="Computing"&gt;</code>). But the provided <code>$deptArray</code> keys are <code>CSIS/BUS/MAR</code> and Fig. 10's CSV stores codes (<code>CSIS</code>, <code>MAR</code>). The option <b>value must be the key</b> and the label the value: <code>&lt;option value="&lt;?= $code ?&gt;"&gt;&lt;?= $name ?&gt;&lt;/option&gt;</code> — do not copy the sample HTML verbatim.</div>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="validation">
+    <h2>6. Validation Rules (Fig. 6)</h2>
+    <table>
+      <tr><th>Field</th><th>Rule</th><th>Error message (verbatim from Fig. 6)</th></tr>
+      <tr><td>studentName</td><td>required</td><td>Please enter your fullname</td></tr>
+      <tr><td>studentID</td><td><code>FILTER_VALIDATE_REGEXP</code> <code>/^\d{10}$/</code> (exactly 10 digits; empty fails too)</td><td>ID should be ten digit number</td></tr>
+      <tr><td>studentEmail</td><td><code>FILTER_VALIDATE_EMAIL</code></td><td>Please enter the correct email address</td></tr>
+      <tr><td>studentTerm</td><td><code>FILTER_VALIDATE_REGEXP</code> <code>/^(Fall|Winter|Summer) 20(2[0-6])$/</code> (Winter 2020 – Fall 2026)</td><td>Please enter the correct term between Winter 2020 until Fall 2026</td></tr>
+      <tr><td>studentDept</td><td>required (from the $deptArray select)</td><td>Please select one of the departments</td></tr>
+      <tr><td>studentStatus</td><td>not validated (Fig. 6 shows exactly 5 errors for an empty form)</td><td>—</td></tr>
+    </table>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="run">
+    <h2>7. Run &amp; Verify (Figs. 1–12)</h2>
+    <pre><code>cd "Assignment 3"
+php -S localhost:3000 -t assign3_starter/public
+# open http://localhost:3000</code></pre>
+    <table>
+      <tr><th>Step</th><th>Action</th><th>Expected (figure)</th></tr>
+      <tr><td>1</td><td>Open <code>/</code></td><td>Only Home link + login form (Fig. 1)</td></tr>
+      <tr><td>2</td><td>Login with a wrong password</td><td>Red error box "invalid login credentials - try again" (Fig. 2)</td></tr>
+      <tr><td>3</td><td>Login <code>admin/Adm@3280</code></td><td>Form page; nav now shows Input Form (Fig. 3)</td></tr>
+      <tr><td>4</td><td>Go home / open Data</td><td>Authorization text (Fig. 4); "Currently our data is still empty..." (Fig. 5)</td></tr>
+      <tr><td>5</td><td>Submit the empty form</td><td>5 errors (Fig. 6); values stick after an invalid submit (sticky form)</td></tr>
+      <tr><td>6</td><td>Submit John Doe / 0123456789 / john@data.com / Fall 2025 / CSIS / domestic</td><td>All controls disabled + "The information will be saved in our file" (Fig. 8)</td></tr>
+      <tr><td>7</td><td>Open Data; add Mary Jane and reopen</td><td>Rows appear (Fig. 9); <code>data/students.csv</code> matches Fig. 10</td></tr>
+      <tr><td>8</td><td>Logout, then login <code>user/User@3280</code></td><td>Home after logout (Fig. 11); user lands on the data page with no Input Form link (Fig. 12); manual <code>/?action=form</code> GET or POST is bounced home and the CSV is unchanged</td></tr>
+    </table>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="submit">
+    <h2>8. Submission Notes</h2>
+    <ul>
+      <li><b>Name &amp; ID</b>: the top-of-file comments and the home page heading currently use the placeholder <code>Your Name (abc12345)</code> — replace them with your own (Requirement 1).</li>
+      <li><b>Rename per the convention</b> (PDF submission list): templates become <code>header_abcXXX.php / home_abcXXX.php / data_abcXXX.php / form_abcXXX.php</code>; src becomes <code>action_controller_abcXXX.php / file_utility_abcXXX.php / file_manager_abcXXX.php</code> (currently sessionManager.php) <code>/ validation_abcXXX.php</code>; then update the four <code>require_once</code> paths in index.php and the header include in the templates.</li>
+      <li><b>students.csv</b>: must not exist at app startup. <code>writeData()</code> creates it automatically on the first successful submit — delete the file before submitting.</li>
+      <li><b>Do not change</b>: the accounts in <code>getUsers()</code> or any provided function signature.</li>
+    </ul>
+  </section>
+
+  <footer>Assignment 3 Tutorial (English) · Same content as the Chinese version · <a href="tutorial-zh.html">查看中文教程</a></footer>
+</div>
+</body>
+</html>

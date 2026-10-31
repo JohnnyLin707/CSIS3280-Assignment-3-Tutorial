@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assignment 3 完成教程（中文版）</title>
+<style>
+  :root{
+    --blue:#0d6efd; --ink:#1f2933; --muted:#5b6b79; --line:#e3e8ee;
+    --bg:#f7f9fb; --card:#ffffff; --code:#0f172a; --codeInk:#dbe4f0;
+    --add:#0a7d43; --rep:#b45309; --keep:#64748b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);line-height:1.75}
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px 80px}
+  header.top{background:linear-gradient(135deg,#0b5ed7,#0d6efd);color:#fff;padding:36px 0 30px;margin-bottom:28px}
+  header.top .wrap{padding-bottom:0}
+  header.top h1{margin:0 0 8px;font-size:28px}
+  header.top p{margin:0;opacity:.92}
+  .langswitch{display:flex;gap:10px;margin-bottom:18px}
+  .langswitch a{padding:6px 14px;border-radius:20px;text-decoration:none;font-size:14px;border:1px solid var(--line);background:#fff;color:var(--muted)}
+  .langswitch a.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  nav.toc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:28px}
+  nav.toc b{display:block;margin-bottom:6px}
+  nav.toc a{color:var(--blue);text-decoration:none;margin-right:16px;font-size:14px;white-space:nowrap}
+  section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin-bottom:24px}
+  h2{margin:0 0 14px;font-size:20px;padding-bottom:10px;border-bottom:2px solid var(--line)}
+  h3{margin:22px 0 8px;font-size:16px}
+  p,li{font-size:14.5px}
+  code{background:#eef2f7;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#0b5ed7}
+  pre{background:var(--code);color:var(--codeInk);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.6}
+  pre code{background:none;border:none;color:inherit;padding:0}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:#eef2f7}
+  .tag{display:inline-block;font-size:12px;border-radius:4px;padding:1px 8px;margin-right:6px;color:#fff;white-space:nowrap}
+  .add{background:var(--add)} .rep{background:var(--rep)} .keep{background:var(--keep)}
+  .note{background:#fff8e6;border:1px solid #f1d38a;border-radius:8px;padding:10px 14px;font-size:13.5px;margin:10px 0}
+  .path{color:var(--muted);font-size:13px}
+  ul.files>li{margin:6px 0}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:30px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>Assignment 3 完成教程（PHP Web 应用：登录认证 + 表单验证 + CSV 文件读写）</h1>
+    <p>本文讲解本次作业是如何一步步完成的：改了哪些文件、每个文件改了哪些位置、哪些原文代码被替换以及为什么、html_examples 里的静态代码如何套用到 templates 里并真正生效。</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="langswitch">
+    <a href="index.html">English</a>
+    <a class="on" href="tutorial-zh.html">中文教程</a>
+  </div>
+
+  <nav class="toc">
+    <b>目录</b>
+    <a href="#overview">1. 项目概览</a>
+    <a href="#flow">2. 请求流转</a>
+    <a href="#files">3. 逐文件修改明细</a>
+    <a href="#deletions">4. 原文代码删除/替换明细</a>
+    <a href="#examples">5. html_examples 套用指南</a>
+    <a href="#validation">6. 验证规则速查</a>
+    <a href="#run">7. 运行与验收</a>
+    <a href="#submit">8. 提交注意事项</a>
+  </nav>
+
+  <!-- ====================================================== -->
+  <section id="overview">
+    <h2>1. 项目概览与最终结构</h2>
+    <p>作业要求做一个三页面 Web 应用：<b>首页（登录）</b>、<b>数据录入表单</b>（仅 admin）、<b>数据展示</b>（登录即可见），数据保存在 <code>data/students.csv</code>。整体采用课堂上 demo 的三层结构：</p>
+    <pre><code>浏览器请求
+   └─&gt; public/index.php        前端控制器：session_start + 引入 src + 按 ?action= 分发
+         └─&gt; src/action_controller.php   动作控制器：决定调用哪个模板（showHome/showForm/showData/processForm）
+               └─&gt; templates/*.php      视图模板：header.php 被各模板 require，拼出完整页面</code></pre>
+<pre><code>assign3_starter/
+├── public/
+│   └── index.php                 ← 前端控制器（唯一入口）
+├── src/
+│   ├── sessionManager.php        ← 登录、会话、认证、授权（isAdmin 为新增）
+│   ├── file_utility.php          ← readData / writeData
+│   ├── validation.php            ← validate() 表单验证
+│   └── action_controller.php     ← showHome / showForm / showData / processForm
+├── templates/
+│   ├── header.php                ← 页头 + 导航（所有页面共用）
+│   ├── home.php                  ← 首页（默认显示登录表单）
+│   ├── form.php                  ← 数据录入表单
+│   └── data.php                  ← 数据展示页
+├── data/
+│   └── students.csv              ← 数据文件（启动时不存在，首次写入时自动创建）
+└── html_examples/                ← 静态参考页（只读，不参与运行）</code></pre>
+    <p>测试账号（<code>getUsers()</code> 中已给出，不可修改）：<code>admin / Adm@3280</code>、<code>user / User@3280</code>。</p>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="flow">
+    <h2>2. 请求是如何流转的（路由表）</h2>
+    <p><code>index.php</code> 用 <code>switch ($action)</code> 分发请求，与 week05 demo（CH16）的 front controller 风格一致：</p>
+    <table>
+      <tr><th>URL</th><th>处理</th><th>效果</th></tr>
+      <tr><td><code>/</code> 或其它</td><td><code>default → showHome('')</code></td><td>未登录显示登录表单（图 1）；已登录显示授权说明文字（图 4）</td></tr>
+      <tr><td><code>/?action=login</code> POST</td><td><code>processLogin()</code></td><td>admin → 表单页（图 3）；user → 数据页（图 12）；失败 → 首页 + 错误提示（图 2）</td></tr>
+      <tr><td><code>/?action=login</code> GET</td><td><code>showHome('')</code></td><td>等同首页</td></tr>
+      <tr><td><code>/?action=form</code> GET / POST</td><td><code>showForm([])</code> / <code>processForm(DATA_FILE)</code></td><td>仅 admin 可进；user 或未登录一律回首页（图 12 说明）</td></tr>
+      <tr><td><code>/?action=data</code></td><td><code>showData(readData(DATA_FILE))</code></td><td>任何登录用户可见（图 5、9、12）</td></tr>
+      <tr><td><code>/?action=logout</code></td><td><code>logout()</code></td><td>清空 <code>$_SESSION</code> 后回首页（图 11）</td></tr>
+    </table>
+    <div class="note">为什么 <code>require</code> 用 <code>__DIR__</code> 拼路径：以 <code>../</code> 开头的相对路径只按"PHP 进程当前工作目录"解析，从不同目录启动服务器就会找不到文件；<code>__DIR__</code> 永远指向文件自身所在目录，任何启动方式都稳妥。数据文件路径同理，定义为常量 <code>DATA_FILE</code>（<code>index.php</code> 中 <code>define('DATA_FILE', __DIR__ . '/../data/students.csv')</code>），这样 <code>sessionManager.php</code> 里的 <code>processLogin()</code>（签名固定、不能加参数）也能拿到它。</div>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="files">
+    <h2>3. 逐文件修改明细（共 9 个文件）</h2>
+    <p>总原则：<b>原题目注释一律保留</b>，在注释指示的位置往下补代码，新增行都带 <code>【补全】</code> 中文注释。</p>
+
+    <h3>3.1 <code>public/index.php</code> — 前端控制器</h3>
+    <p class="path">原文状态：29 行全部是注释骨架，没有一行可执行代码。</p>
+    <ul>
+      <li><span class="tag add">新增</span><code>// start the session</code> 之下：<code>session_start();</code></li>
+      <li><span class="tag add">新增</span><code>// require all the necessary files</code> 之下：4 个 <code>require_once __DIR__ . '/../src/xxx.php';</code>（sessionManager、file_utility、validation、action_controller）</li>
+      <li><span class="tag add">新增</span><code>define('DATA_FILE', __DIR__ . '/../data/students.csv');</code>（数据文件在启动时不存在，首次提交成功时才由 <code>writeData()</code> 创建，对应图 10）</li>
+      <li><span class="tag add">新增</span><code>$action = filter_input(INPUT_GET, 'action');</code> 与 switch 的 5 个 case（login / form / data / logout / default）</li>
+      <li><span class="tag keep">保留</span>全部原注释，代码写在每条注释之下</li>
+    </ul>
+
+    <h3>3.2 <code>src/sessionManager.php</code> — 登录/会话/认证/授权</h3>
+    <p class="path">原文状态：除 <code>processLogin()</code> 外全部写好。</p>
+    <ul>
+      <li><span class="tag add">新增</span>修改位置：<code>processLogin()</code> 内，<code>$_SESSION['username'] = $username;</code> 之后、原注释 <code>// otherwise show the data page</code> 之下的<b>预留空白处</b>：<pre><code>// 【补全】admin 登录后显示表单页（见图 3）；user 登录后显示数据页（见图 12）
+if ($username == 'admin') {
+    showForm([]);
+} else {
+    showData(readData(DATA_FILE));
+}</code></pre></li>
+      <li><span class="tag add">新增</span>文件末尾 <code>logout()</code> 之后追加授权函数 <code>isAdmin()</code>（导航与 form 路由共用）：<pre><code>function isAdmin(): bool
+{
+    return isLoggedIn() &amp;&amp; usernameFromSession() == 'admin';
+}</code></pre></li>
+      <li><span class="tag keep">保留</span>其余函数（getUsers、validLoginCredentials、usernameFromSession、isLoggedIn、logout）一字未动；没有删除任何代码</li>
+    </ul>
+
+    <h3>3.3 <code>src/file_utility.php</code> — 文件读写</h3>
+    <p class="path">原文状态：两个空函数 + 注释。</p>
+    <ul>
+      <li><span class="tag add">新增</span><code>readData()</code>：先 <code>file_exists()</code> 检查，不存在直接 <code>return [];</code>（数据页据此显示图 5 的提示）；存在则 <code>fopen(..., 'r')</code> + <code>fgetcsv</code> 循环逐行读入二维数组，并跳过空行</li>
+      <li><span class="tag add">新增</span><code>writeData()</code>：先 <code>file_exists()</code> 检查，<b>不存在则 <code>touch()</code> 先创建</b>，再 <code>file_put_contents($fileName, $str . PHP_EOL, FILE_APPEND | LOCK_EX)</code> 追加一行</li>
+    </ul>
+    <div class="note">为什么 <code>writeData()</code> 要"先创建再写入"？题目注释原文是"文件不存在就不写任何数据"，但作业同时要求 students.csv 启动时不存在、图 10 又要求首次提交必须能保存——若严格照注释"不写"，第一次提交永远存不进数据。两处矛盾以图片行为为准，代码注释里已说明这个取舍。</div>
+
+    <h3>3.4 <code>src/validation.php</code> — 表单验证</h3>
+    <p class="path">原文状态：<code>validate()</code> 只有注释。要求尽量使用 PHP filter 扩展（作业引言）。</p>
+    <ul>
+      <li><span class="tag add">新增</span><code>filter_input(INPUT_POST, ...)</code> 读取 5 个字段，然后逐条规则验证，错误文案严格照图 6：<pre><code>$errors = [];
+if (empty($studentName))  { $errors[] = 'Please enter your fullname'; }
+if (!filter_var($studentID, FILTER_VALIDATE_REGEXP,
+        ['options' =&gt; ['regexp' =&gt; '/^\d{10}$/']])) {
+    $errors[] = 'ID should be ten digit number';
+}
+if (!filter_var($studentEmail, FILTER_VALIDATE_EMAIL)) {
+    $errors[] = 'Please enter the correct email address';
+}
+if (!filter_var($studentTerm, FILTER_VALIDATE_REGEXP,
+        ['options' =&gt; ['regexp' =&gt; '/^(Fall|Winter|Summer) 20(2[0-6])$/']])) {
+    $errors[] = 'Please enter the correct term between Winter 2020 until Fall 2026';
+}
+if (empty($studentDept))  { $errors[] = 'Please select one of the departments'; }
+return $errors;</code></pre></li>
+      <li><span class="tag keep">保留</span>原注释与结尾 <code>?&gt;</code></li>
+    </ul>
+
+    <h3>3.5 <code>src/action_controller.php</code> — 动作控制器</h3>
+    <p class="path">原文状态：4 个空函数 + 注释（函数签名不可改）。</p>
+    <ul>
+      <li><span class="tag add">新增</span><code>showHome / showForm / showData</code>：各自 <code>require_once __DIR__ . '/../templates/xxx.php';</code>（模板处在函数作用域内，因此函数参数 <code>$loginError / $errors / $dataArray</code> 在模板里可直接使用）</li>
+      <li><span class="tag add">新增</span><code>processForm($dataFileName)</code>：先 <code>validate()</code>；有错 → <code>showForm($errors)</code>（图 6）；无错 → 拼一行 <code>Name,ID,Email,Dept,Status</code>（图 10 的 5 个字段）→ <code>writeData()</code> → <code>$GLOBALS['formSaved'] = true;</code> → <code>showForm([])</code>（图 8：控件禁用 + 确认文字）</li>
+    </ul>
+    <div class="note">为什么用 <code>$GLOBALS['formSaved']</code>？成功后要显示"带禁用控件的表单 + 确认文字"，而 <code>showForm($errors)</code> 的签名不能改，无法多传一个参数；于是用全局标记，form.php 模板里以 <code>$GLOBALS['formSaved'] ?? false</code> 读取。另外 CSV 中没有 Term 字段——图 10 只有 5 列，数据页 Term 列显示的其实是 Email（对照图 9），所以构造 <code>$str</code> 时不拼 Term。</div>
+
+    <h3>3.6 <code>templates/header.php</code> — 页头与导航（本项目仅有的 2 处原文替换都在这里）</h3>
+    <ul>
+      <li><span class="tag rep">替换</span>位置：第 14 行 <code>&lt;title&gt;Put title here&lt;/title&gt;</code> → <code>&lt;title&gt;&lt;?= $pageTitle ?&gt;&lt;/title&gt;</code>。原因：这是静态占位文字；每个模板都设置了 <code>$pageTitle</code>，页头必须动态输出，否则所有页面标题都一样、无法对应图 1/3/9 的页面标题。</li>
+      <li><span class="tag rep">替换</span>位置：右侧用户名区 <code>&lt;strong&gt;I am nobody&lt;/strong&gt;</code> → <code>&lt;strong&gt;&lt;?= usernameFromSession() ?&gt;&lt;/strong&gt;</code>。原因：必须显示真实登录用户名（图 3 的 admin、图 12 的 user）。</li>
+      <li><span class="tag add">新增</span>3 个条件块（用 <code>&lt;?php if ...: ?&gt; ... &lt;?php endif; ?&gt;</code> 包住原列表项，列表项本身的 HTML 一字未改）：<pre><code>&lt;?php if (isAdmin()): ?&gt;      &lt;!-- Input Form 链接：仅 admin（图 12） --&gt;
+&lt;?php if (isLoggedIn()): ?&gt;   &lt;!-- Data 链接：登录即可见 --&gt;
+&lt;?php if (isLoggedIn()): ?&gt;   &lt;!-- 右侧"用户名 + Logout"整块：未登录不显示（图 1） --&gt;</code></pre></li>
+      <li><span class="tag keep">保留</span><code>$homeLink ?? ''</code> 等变量兜底、Bootstrap CDN 引入、全部原注释（含拼写错误的 "folliwng"）</li>
+    </ul>
+
+    <h3>3.7 <code>templates/home.php</code> — 首页</h3>
+    <ul>
+      <li><span class="tag keep">保留</span>顶部 3 行设置（<code>$pageTitle</code>、<code>$homeLink='active'</code>、<code>require_once 'header.php'</code>）与全部原注释</li>
+      <li><span class="tag add">新增</span><code>&lt;h1&gt;Assignment 3 Homepage's of …&lt;/h1&gt;</code>（图 1 标题，姓名学号处为占位符，需自行替换）</li>
+      <li><span class="tag add">新增</span><code>if (!isLoggedIn())</code> 分支：先 <code>if (!empty($loginError))</code> 显示错误框（图 2），再显示登录表单；<code>else</code> 分支显示图 4 的授权说明文字</li>
+    </ul>
+
+    <h3>3.8 <code>templates/form.php</code> — 录入表单</h3>
+    <ul>
+      <li><span class="tag keep">保留</span>顶部设置、<code>$deptArray</code>（题目提供）与全部原注释</li>
+      <li><span class="tag add">新增</span>粘性表单：用 <code>filter_input(INPUT_POST, ...)</code> 读回 6 个字段，回显到 <code>value</code>/<code>selected</code>/<code>checked</code>（校验失败不必重填）</li>
+      <li><span class="tag add">新增</span><code>$formSaved = $GLOBALS['formSaved'] ?? false;</code> 与 <code>$disabled = $formSaved ? 'disabled' : '';</code> —— 所有控件加 <code>&lt;?= $disabled ?&gt;</code>（图 8）</li>
+      <li><span class="tag add">新增</span>错误框（<code>if (!empty($errors))</code> + <code>foreach</code>）、下拉选项改为遍历 <code>$deptArray</code>、确认文字 <code>&lt;p&gt;The information will be saved in our file&lt;/p&gt;</code>（表单下方，图 8）、提交按钮补 <code>value="Submit"</code></li>
+    </ul>
+
+    <h3>3.9 <code>templates/data.php</code> — 数据展示</h3>
+    <ul>
+      <li><span class="tag keep">保留</span>顶部设置与全部原注释</li>
+      <li><span class="tag add">新增</span><code>if (empty($dataArray))</code> → <code>&lt;h1&gt;Currently our data is still empty. Please fill out the form&lt;/h1&gt;</code>（图 5）；<code>else</code> → 图 9 的表格，<code>&lt;tbody&gt;</code> 用 <code>foreach ($dataArray as $row)</code> + <code>$number++</code> 输出序号与 5 个字段</li>
+    </ul>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="deletions">
+    <h2>4. 原文代码删除/替换明细（直接回答"删了什么、在哪、为什么"）</h2>
+    <p>结论先说：<b>整个项目没有删除任何原题目注释</b>；真正被替换掉的原文只有 <code>templates/header.php</code> 里的 <b>2 处静态占位内容</b>：</p>
+    <table>
+      <tr><th>#</th><th>文件与具体位置</th><th>原文</th><th>替换为</th><th>为什么必须删/换</th></tr>
+      <tr>
+        <td>1</td>
+        <td><code>templates/header.php</code> 第 14 行（<code>&lt;title&gt;</code> 标签内）</td>
+        <td><code>Put title here</code></td>
+        <td><code>&lt;?= $pageTitle ?&gt;</code></td>
+        <td>静态占位文字。starter 里每个模板都定义了 <code>$pageTitle</code> 却没人使用它，页头不改成动态输出，所有页面的 <code>&lt;title&gt;</code> 就都是同一句占位文字，与题目给的变量意图相悖。</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><code>templates/header.php</code> 右上角用户名区（"You are logged in as:" 之后）</td>
+        <td><code>&lt;strong&gt;I am nobody&lt;/strong&gt;</code></td>
+        <td><code>&lt;strong&gt;&lt;?= usernameFromSession() ?&gt;&lt;/strong&gt;</code></td>
+        <td>写死的假用户名。图 3/12 要求显示真实登录用户（admin/user），必须改为从会话读取。</td>
+      </tr>
+    </table>
+    <p>其余情况都属于"<b>补全</b>"而非删除：</p>
+    <ul>
+      <li><code>public/index.php</code>、<code>src/action_controller.php</code>、<code>src/file_utility.php</code>、<code>src/validation.php</code>：原文是<b>纯注释骨架</b>（只有注释没有代码），按作业要求在注释下方把实现写出来，注释原样保留。</li>
+      <li><code>src/sessionManager.php</code>：只在 <code>processLogin()</code> 预留的空白处填了 if/else，文件末尾追加了 <code>isAdmin()</code>，其余一字未动。</li>
+      <li><code>templates/home.php / form.php / data.php</code>：保留全部原注释（包括 form.php 里题目提供的 <code>$deptArray</code>），新代码写在原注释指示的位置之后。</li>
+    </ul>
+    <div class="note">作业规定"You can not change the function signature in the provided files"——所以全项目没有改任何函数签名，没有删任何函数；需要"多传一个信息"时改用常量（<code>DATA_FILE</code>）或全局标记（<code>$GLOBALS['formSaved']</code>）解决。</div>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="examples">
+    <h2>5. html_examples → templates 套用指南（怎么拿代码才能生效）</h2>
+    <p><code>html_examples/</code> 里的 5 个文件是<b>静态效果图</b>，帮你确认"最终渲染出来的 HTML 长什么样"；<code>templates/</code> 里才是动态模板。两者关系：</p>
+    <table>
+      <tr><th>html_examples 文件</th><th>内容</th><th>对应去向</th></tr>
+      <tr><td><code>template_header.html</code></td><td>页头部分（导航 + 用户区）</td><td><code>templates/header.php</code>（starter 已给出主体，只需补条件与动态输出）</td></tr>
+      <tr><td><code>home_complete.html</code></td><td>完整首页 = header + home 拼接后的最终效果</td><td>用来核对 header.php + home.php 拼接结果是否一致</td></tr>
+      <tr><td><code>template_home.html</code></td><td>首页下半部分（h1 + 错误框 + 登录表单）</td><td><code>templates/home.php</code> 的 body</td></tr>
+      <tr><td><code>template_form.html</code></td><td>表单下半部分（错误框 + 表单）</td><td><code>templates/form.php</code> 的 body</td></tr>
+      <tr><td><code>template_data.html</code></td><td>数据页下半部分（h1 + 表格）</td><td><code>templates/data.php</code> 的 body</td></tr>
+    </table>
+
+    <h3>通用四步法（静态 HTML → 生效的 PHP 模板）</h3>
+    <ol>
+      <li><b>定位片段</b>：在 html_examples 里找到需要的静态块（错误框、表单、表格、导航项）。</li>
+      <li><b>粘进模板</b>：复制到 <code>templates/xxx.php</code> 中 <code>require_once 'header.php';</code> 之后、结尾 <code>&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</code> 之前。粘进去不写 PHP 也能先跑出静态效果。</li>
+      <li><b>数据动态化</b>：把写死的示例值换成 <code>&lt;?= $变量 ?&gt;</code>；把重复书写的行（option、表格行、错误 li）换成 <code>foreach</code> 循环。</li>
+      <li><b>加控制结构</b>：用 <code>&lt;?php if ...: ?&gt; ... &lt;?php endif; ?&gt;</code> 控制"显不显示 / 选中 / 禁用"。</li>
+    </ol>
+
+    <h3>为什么"直接粘"就能生效</h3>
+    <ul>
+      <li>模板是被 <code>showHome()/showForm()/showData()</code> 用 <code>require</code> 引入的，此时处于<b>函数作用域</b>，所以函数参数 <code>$loginError / $errors / $dataArray</code> 在模板里直接可用，不需要任何额外传递。</li>
+      <li><code>header.php</code> 与各模板同目录，<code>require_once 'header.php'</code> 会按"调用脚本所在目录"兜底查找，必然命中。</li>
+      <li><code>isLoggedIn() / isAdmin() / usernameFromSession()</code> 是全局函数，模板里随时可调用。</li>
+      <li>CSS 来自 Bootstrap CDN，链接以 <code>/</code> 开头（站点根 = public/），所以必须用 <code>php -S localhost:3000 -t public</code> 方式启动。</li>
+    </ul>
+
+    <h3>逐模板改造对照</h3>
+    <table>
+      <tr><th>目标模板</th><th>取材位置</th><th>改造点（示例 → 生效）</th></tr>
+      <tr>
+        <td><code>home.php</code></td>
+        <td><code>template_home.html</code> 第 3 行（h1）、15–48 行（formLogin 整块）；<code>home_complete.html</code> 第 65–71 行（<code>form-control is-invalid</code> 错误框）</td>
+        <td>错误框包进 <code>if (!empty($loginError))</code>，<code>&lt;li&gt;Error message 1&lt;/li&gt;</code> 换成 <code>&lt;li&gt;&lt;?= $loginError ?&gt;&lt;/li&gt;</code>；h1+表单包进 <code>if (!isLoggedIn())</code>，<code>else</code> 分支补图 4 的说明文字。</td>
+      </tr>
+      <tr>
+        <td><code>form.php</code></td>
+        <td><code>template_form.html</code> 第 3–9 行（错误框）、11–65 行（表单）</td>
+        <td>① 错误框包 <code>if (!empty($errors))</code>，li 改 <code>foreach ($errors as $error)</code>；② 每个 input 加 <code>value="&lt;?= $studentXxx ?&gt;"</code>；③ 静态 3 个 <code>&lt;option&gt;</code> 换成 <code>foreach ($deptArray as $code =&gt; $name)</code> 并加 <code>selected</code>；④ 两个 radio 加 <code>checked</code> 判断；⑤ 所有控件加 <code>&lt;?= $disabled ?&gt;</code>；⑥ 提交按钮补 <code>value="Submit"</code>（图 3 是绿色 "Submit"）。</td>
+      </tr>
+      <tr>
+        <td><code>data.php</code></td>
+        <td><code>template_data.html</code> 第 3 行（h1）、5–34 行（表格）</td>
+        <td>示例的两行 <code>&lt;tr&gt;</code> 换成 <code>foreach ($dataArray as $row)</code>，单元格输出 <code>$row[0]…$row[4]</code>，序号用 <code>$number++</code>；整表包进 <code>else</code>，空数据分支输出图 5 文案。</td>
+      </tr>
+      <tr>
+        <td><code>header.php</code></td>
+        <td><code>template_header.html</code> / <code>home_complete.html</code> 第 43–58 行（用户区）</td>
+        <td>starter 已提供骨架：只需 3 处条件包裹 + 2 处占位替换（见第 3.6 节）。</td>
+      </tr>
+    </table>
+    <div class="note">最容易踩的坑：<code>template_form.html</code> 里的选项写的是 <code>&lt;option value="Computing"&gt;Computing&lt;/option&gt;</code>（全名当 value）。但 <code>form.php</code> 提供的 <code>$deptArray</code> 的键是 <code>CSIS/BUS/MAR</code>，且图 10 的 CSV 里存的是代码（<code>CSIS</code>、<code>MAR</code>）。所以 option 的 <b>value 必须用键</b>、显示文字用值：<code>&lt;option value="&lt;?= $code ?&gt;"&gt;&lt;?= $name ?&gt;&lt;/option&gt;</code>，不能照抄示例 HTML。</div>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="validation">
+    <h2>6. 验证规则速查（对应图 6）</h2>
+    <table>
+      <tr><th>字段</th><th>规则</th><th>错误信息（图 6 原文）</th></tr>
+      <tr><td>studentName</td><td>非空</td><td>Please enter your fullname</td></tr>
+      <tr><td>studentID</td><td><code>FILTER_VALIDATE_REGEXP</code>：<code>/^\d{10}$/</code>（恰好 10 位数字，空值也不通过）</td><td>ID should be ten digit number</td></tr>
+      <tr><td>studentEmail</td><td><code>FILTER_VALIDATE_EMAIL</code></td><td>Please enter the correct email address</td></tr>
+      <tr><td>studentTerm</td><td><code>FILTER_VALIDATE_REGEXP</code>：<code>/^(Fall|Winter|Summer) 20(2[0-6])$/</code>（Winter 2020 ~ Fall 2026）</td><td>Please enter the correct term between Winter 2020 until Fall 2026</td></tr>
+      <tr><td>studentDept</td><td>非空（来自 $deptArray 下拉）</td><td>Please select one of the departments</td></tr>
+      <tr><td>studentStatus</td><td>不验证（图 6 空表单只报 5 条错误，无 status 一条）</td><td>—</td></tr>
+    </table>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="run">
+    <h2>7. 本地运行与验收清单（对应图 1–12）</h2>
+    <pre><code>cd "Assignment 3"
+php -S localhost:3000 -t assign3_starter/public
+# 浏览器打开 http://localhost:3000</code></pre>
+    <table>
+      <tr><th>步骤</th><th>操作</th><th>预期（对应图片）</th></tr>
+      <tr><td>1</td><td>打开 <code>/</code></td><td>仅 Home 链接 + 登录表单（图 1）</td></tr>
+      <tr><td>2</td><td>错误密码登录</td><td>红色错误框 "invalid login credentials - try again"（图 2）</td></tr>
+      <tr><td>3</td><td><code>admin/Adm@3280</code> 登录</td><td>进入表单页，导航出现 Input Form（图 3）</td></tr>
+      <tr><td>4</td><td>回首页 / 打开 Data</td><td>授权说明文字（图 4）；"Currently our data is still empty..."（图 5）</td></tr>
+      <tr><td>5</td><td>空表单提交</td><td>5 条错误（图 6）；乱填后再看输入框有回显（粘性表单）</td></tr>
+      <tr><td>6</td><td>填 John Doe / 0123456789 / john@data.com / Fall 2025 / CSIS / domestic 提交</td><td>控件全部禁用 + "The information will be saved in our file"（图 8）</td></tr>
+      <tr><td>7</td><td>打开 Data；再录 Mary Jane 后再看</td><td>表格逐条显示（图 9）；<code>data/students.csv</code> 内容与图 10 一致</td></tr>
+      <tr><td>8</td><td>Logout → <code>user/User@3280</code> 登录</td><td>回首页（图 11）；user 直达数据页，导航无 Input Form（图 12）；user 手输 <code>/?action=form</code> 或 POST 都被挡回首页，CSV 不变</td></tr>
+    </table>
+  </section>
+
+  <!-- ====================================================== -->
+  <section id="submit">
+    <h2>8. 提交注意事项</h2>
+    <ul class="files">
+      <li><b>姓名学号</b>：所有文件顶部注释与首页大标题目前是占位符 <code>Your Name (abc12345)</code>，提交前替换成自己的信息（作业要求 1）。</li>
+      <li><b>按命名规范重命名</b>（PDF 的提交清单）：模板改名 <code>header_abcXXX.php / home_abcXXX.php / data_abcXXX.php / form_abcXXX.php</code>；src 改名 <code>action_controller_abcXXX.php / file_utility_abcXXX.php / file_manager_abcXXX.php</code>（即现在的 sessionManager.php）<code>/ validation_abcXXX.php</code>；改名后需同步更新 index.php 里的 4 个 <code>require_once</code> 路径与各模板的 header 引用。</li>
+      <li><b>students.csv</b>：要求"应用启动时不存在"。首次成功提交时 <code>writeData()</code> 会自动创建，交之前删掉该文件即可。</li>
+      <li><b>不要改</b>：<code>getUsers()</code> 的账号密码、任何提供好的函数签名。</li>
+    </ul>
+  </section>
+
+  <footer>Assignment 3 Tutorial (Chinese) · 与英文版内容一致 · <a href="index.html">Switch to English</a></footer>
+</div>
+</body>
+</html>
