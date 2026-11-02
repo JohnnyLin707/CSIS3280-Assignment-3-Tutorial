@@ -9,7 +9,7 @@
     --blue:#0d6efd; --ink:#1f2933; --muted:#5b6b79; --line:#e3e8ee;
     --bg:#f7f9fb; --card:#ffffff; --code:#0f172a; --codeInk:#dbe4f0;
     --add:#0a7d43; --rep:#b45309; --keep:#64748b;
-    --rose:#e11d48; --amber:#d97706; --emerald:#0a7d43;
+    --rose:#e11d48; --amber:#d97706; --emerald:#0a7d43; --violet:#7c3aed;
     --primary-soft:#eff6ff;
   }
   *{box-sizing:border-box}
@@ -34,6 +34,9 @@
   h2.part::before{content:"";display:inline-block;width:5px;height:22px;border-radius:3px}
   h2.part.a::before{background:var(--emerald)}
   h2.part.b::before{background:var(--amber)}
+  h2.part.c::before{background:var(--violet)}
+  h3.sub{margin:20px 0 10px;font-size:15px}
+  h3.sub span{color:var(--muted);font-weight:400;font-size:12.5px}
   h2.part small{font-size:12.5px;color:var(--muted);font-weight:400}
   .q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:18px}
   .qhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -86,7 +89,7 @@
       <a href="assign3-step-by-step-zh.html">保姆级做题教程</a>
     </div>
     <h1>Assignment 3 Practice Quiz — Predicted Exam Questions</h1>
-    <p>22 道预测选择题，全部来自本教程、starter 源码与课堂 demo（week04–week06）。Part A 为简单必考题（10 题），Part B 为中等难度题（12 题）。点击左侧英文选项作答，右侧为原题中文对照翻译，答完立即显示对错与双语解析。</p>
+    <p>32 道预测选择题，全部来自本教程、starter 源码与课堂 demo。Part A 简单必考题（10 题）、Part B 中等难度题（12 题）、Part C Week06 面向对象专项（10 题）。点击左侧英文选项作答，右侧为原题中文对照翻译，答完立即显示对错与双语解析。</p>
     <div class="topics">
       <span>Front Controller 路由</span>
       <span>Session 认证与授权</span>
@@ -96,16 +99,18 @@
       <span>Sticky Form</span>
       <span>常见踩坑</span>
       <span>Week04–06 Demo 要点</span>
+      <span>Week06 OOP：类 · 封装 · 继承</span>
     </div>
   </div>
 </header>
 
 <div class="scorebar">
   <div class="chips">
-    <span class="chip">Answered <b id="sAnswered">0</b>/22</span>
+    <span class="chip">Answered <b id="sAnswered">0</b>/32</span>
     <span class="chip">Correct <b id="sCorrect">0</b></span>
     <span class="chip">Part A · Easy <b id="sEasy">0</b>/10</span>
     <span class="chip">Part B · Medium <b id="sMed">0</b>/12</span>
+    <span class="chip">Part C · OOP <b id="sOop">0</b>/10</span>
     <button class="reset" id="btnReset">Reset Quiz</button>
   </div>
 </div>
@@ -120,6 +125,14 @@
   <section class="part" id="partB">
     <h2 class="part b">Part B · Medium <small>（中等难度必考题 × 12，拉开差距的地方）</small></h2>
     <div id="listB"></div>
+  </section>
+
+  <section class="part" id="partC">
+    <h2 class="part c">Part C · Week06 OOP 专项 <small>（面向对象必考 coding 题 × 10）</small></h2>
+    <h3 class="sub">C-Easy <span>· 类、封装与魔术方法 × 5</span></h3>
+    <div id="listCEasy"></div>
+    <h3 class="sub">C-Medium <span>· 继承与增强 × 5</span></h3>
+    <div id="listCMed"></div>
   </section>
 
   <div class="done hidden" id="doneMsg"></div>
@@ -439,12 +452,156 @@ const QUESTIONS = [
     ans:1,
     explEn:`<code>private</code> properties cannot be read or written from outside the class — PHP raises a fatal error. All changes must go through the setter, which validates the value: that is encapsulation (CH18).`,
     explZh:`private 私有属性不能在类外读取或写入——PHP 会抛出致命错误。所有修改必须经过 setter，由它来校验数值：这就是封装（CH18）。week06 demo 还演示了继承（extends / abstract / parent::__construct）。`
+  },
+
+  /* ================= PART C · WEEK06 OOP ================= */
+  {
+    id:"C1", level:"easy", tag:"Class Basics",
+    en:`Which code correctly defines the Product class and creates an instance of it (week06 CH18)?`,
+    zh:`week06 CH18 中，哪段代码正确地定义了 Product 类并创建了它的实例？`,
+    opts:[
+      {en:`define("Product", [...]); then $p = Product();`, zh:`define("Product", [...]); 然后 $p = Product();`},
+      {en:`class Product { ... }  then  $product = new Product(0, '');`, zh:`class Product { ... }  然后  $product = new Product(0, '');`},
+      {en:`function Product() { ... }  then  $product = Product();`, zh:`function Product() { ... }  然后  $product = Product();`},
+      {en:`struct Product { ... }  then  $product = make Product;`, zh:`struct Product { ... }  然后  $product = make Product;`}
+    ],
+    ans:1,
+    explEn:`A class is defined with the <code>class</code> keyword and instantiated with <code>new</code>: <code>$product = new Product(0, '');</code> — the parentheses pass arguments to the constructor.`,
+    explZh:`用 class 关键字定义类、用 new 实例化：$product = new Product(0, ''); 括号里的参数会传给构造函数。`
+  },
+  {
+    id:"C2", level:"easy", tag:"Encapsulation",
+    en:`What do the declarations <code>private string $name;</code> and <code>private float $price;</code> mean in the Product class?`,
+    zh:`Product 类中的 private string $name; 与 private float $price; 表示什么？`,
+    opts:[
+      {en:`The properties are constants that can never change`, zh:`这两个属性是永远不能修改的常量`},
+      {en:`The properties are global variables shared by all code`, zh:`这两个属性是所有代码共享的全局变量`},
+      {en:`The properties belong to the class with fixed types (string / float) and cannot be accessed from outside`, zh:`属性属于类、类型固定为 string/float，且类外无法访问`},
+      {en:`The properties are optional and may not exist at runtime`, zh:`属性可有可无，运行时可能不存在`}
+    ],
+    ans:2,
+    explEn:`<code>private</code> restricts access to the class itself; the type declarations (<code>string</code>, <code>float</code>) force every assigned value to be of that type. Outside code must go through the getters/setters.`,
+    explZh:`private 限制只有类内部可以访问；类型声明（string/float）强制赋值的类型。类外代码必须通过 getter/setter 读写。`
+  },
+  {
+    id:"C3", level:"easy", tag:"Encapsulation",
+    en:`Which pair matches the exact getter/setter signatures used for $name in the Product class?`,
+    zh:`哪一组与 Product 类中 $name 的 getter/setter 方法签名完全一致？`,
+    opts:[
+      {en:`getName(): string  /  setName(string $name): void`, zh:`getName(): string  /  setName(string $name): void`},
+      {en:`get_name()  /  set_name($value)`, zh:`get_name()  /  set_name($value)`},
+      {en:`name()  /  assignName($value)`, zh:`name()  /  assignName($value)`},
+      {en:`readName(): string  /  writeName(string $n)`, zh:`readName(): string  /  writeName(string $n)`}
+    ],
+    ans:0,
+    explEn:`The demo defines <code>public function getName(): string</code> and <code>public function setName(string $name): void</code> — the getter declares its return type, the setter returns void.`,
+    explZh:`demo 中定义的是 public function getName(): string 与 public function setName(string $name): void——getter 声明返回类型，setter 返回 void。`
+  },
+  {
+    id:"C4", level:"easy", tag:"Magic Methods",
+    en:`When does the <code>__toString()</code> method of an object run automatically?`,
+    zh:`对象的 __toString() 方法在什么时候自动执行？`,
+    opts:[
+      {en:`When the object is destroyed`, zh:`对象被销毁时`},
+      {en:`When the object is used as a string, e.g. print $food;`, zh:`对象被当作字符串使用时，例如 print $food;`},
+      {en:`When a setter rejects a value`, zh:`setter 拒绝某个值时`},
+      {en:`When the class file is first loaded`, zh:`类文件第一次被加载时`}
+    ],
+    ans:1,
+    explEn:`<code>print $food;</code> and <code>"The object is {$product}"</code> both treat the object as a string, so PHP calls <code>__toString()</code> and prints whatever it returns — both week06 demos end with exactly this.`,
+    explZh:`print $food; 和 "The object is {$product}" 都把对象当字符串用，PHP 会自动调用 __toString() 并输出其返回值——week06 两个 demo 的结尾就是这样演示的。`
+  },
+  {
+    id:"C5", level:"easy", tag:"Constructor",
+    en:`What does the constructor <code>public function __construct(float $price, string $name)</code> in Product do?`,
+    zh:`Product 的构造函数 __construct(float $price, string $name) 是做什么的？`,
+    opts:[
+      {en:`It runs automatically when new Product(...) executes`, zh:`执行 new Product(...) 时自动运行`},
+      {en:`It must be called manually right after creating the object`, zh:`创建对象后必须再手动调用一次`},
+      {en:`It runs only when the object is printed`, zh:`只在对象被输出时运行`},
+      {en:`It is ignored because the class has private properties`, zh:`因为属性是 private 而被忽略`}
+    ],
+    ans:0,
+    explEn:`<code>new Product(0, '')</code> triggers the constructor immediately; in the demo it calls <code>$this->setPrice($price)</code> and <code>$this->setName($name)</code>, so even constructor arguments are validated through the setters.`,
+    explZh:`new Product(0, '') 会立即触发构造函数；demo 里它调用 $this->setPrice($price) 和 $this->setName($name)，连构造参数也经过 setter 验证。`
+  },
+  {
+    id:"C6", level:"med", tag:"Setter Validation",
+    en:`<code>setPrice()</code> only assigns when $price >= 0. After running <code>$product->setPrice(-100);</code>, what is the state of the price property?`,
+    zh:`setPrice() 只在 $price >= 0 时赋值。执行 $product->setPrice(-100); 之后，price 属性处于什么状态？`,
+    opts:[
+      {en:`It becomes -100`, zh:`变成 -100`},
+      {en:`PHP throws a fatal error`, zh:`PHP 抛出致命错误`},
+      {en:`The assignment is silently rejected — the property keeps its previous value`, zh:`赋值被静默拒绝——属性保持原来的值`},
+      {en:`PHP automatically resets it to 0`, zh:`PHP 自动把它重置为 0`}
+    ],
+    ans:2,
+    explEn:`The <code>if ($price >= 0)</code> guard simply skips the assignment, so nothing changes and no error occurs — that is why the demo can safely call <code>setPrice(-100)</code>. Validation lives inside the setter (encapsulation). Contrast with direct access from outside, which is a fatal error.`,
+    explZh:`if ($price >= 0) 判断只是跳过赋值，所以值不变、也不报错——demo 里才能安全地调用 setPrice(-100)。验证逻辑写在 setter 内部（封装）。对比：类外直接访问属性则是致命错误。`
+  },
+  {
+    id:"C7", level:"med", tag:"Encapsulation",
+    en:`The CH18 demo comments out <code>#$product->name = "hammer";</code>. Why would this line fail if uncommented?`,
+    zh:`CH18 demo 注释掉了 #$product->name = "hammer"; —— 如果取消注释，这行为什么会失败？`,
+    opts:[
+      {en:`Because name is a class constant`, zh:`因为 name 是类常量`},
+      {en:`Because $product is not yet an object`, zh:`因为 $product 还不是对象`},
+      {en:`Because $name is private: reading or writing it from outside the class is a fatal error`, zh:`因为 $name 是 private：类外读/写它都是致命错误`},
+      {en:`Because properties cannot hold strings`, zh:`因为属性不能存字符串`}
+    ],
+    ans:2,
+    explEn:`<code>private</code> properties are invisible outside the class — PHP throws "Uncaught Error: Cannot access private property". The commented lines demonstrate the wrong way; the correct way is <code>$product->setName('hammer')</code>.`,
+    explZh:`private 属性在类外不可见——PHP 抛出 "Uncaught Error: Cannot access private property"。被注释掉的两行示范的是错误写法；正确写法是 $product->setName('hammer')。`
+  },
+  {
+    id:"C8", level:"med", tag:"Inheritance",
+    en:`Which statement about <code>abstract class Vehicle</code> (CH19 demo1) is correct?`,
+    zh:`关于 CH19 demo1 的 abstract class Vehicle，哪个说法是正确的？`,
+    opts:[
+      {en:`It can be instantiated directly with new Vehicle()`, zh:`可以用 new Vehicle() 直接实例化`},
+      {en:`It cannot be instantiated — it exists to be extended, e.g. class Car extends Vehicle`, zh:`不能实例化——它就是用来被继承的，例如 class Car extends Vehicle`},
+      {en:`It cannot contain any properties`, zh:`不能包含任何属性`},
+      {en:`It cannot contain any method bodies (signatures only)`, zh:`不能包含任何方法体（只能有方法签名）`}
+    ],
+    ans:1,
+    explEn:`An abstract class cannot be instantiated with <code>new</code>; it is a base template for subclasses. <code>Car extends Vehicle</code> inherits all its public/protected members. (An abstract class may still contain concrete methods with bodies — as Vehicle does.)`,
+    explZh:`抽象类不能被 new 实例化，它是子类的基类模板；class Car extends Vehicle 继承其全部 public/protected 成员。（抽象类可以包含带方法体的具体方法——Vehicle 就是这样。）`
+  },
+  {
+    id:"C9", level:"med", tag:"Encapsulation",
+    en:`In Vehicle, $makeModel is <code>protected</code> while $numPassengers is <code>private</code>. Why can Car's getMakeModelShape() use $this->makeModel but not $this->numPassengers?`,
+    zh:`Vehicle 中 $makeModel 是 protected 而 $numPassengers 是 private。为什么 Car 的 getMakeModelShape() 能用 $this->makeModel 却不能用 $this->numPassengers？`,
+    opts:[
+      {en:`protected members are visible to the class and its subclasses; private members only to the defining class`, zh:`protected 对本类和子类可见；private 只对定义它的类可见`},
+      {en:`protected members are visible everywhere, like public`, zh:`protected 到处可见，和 public 一样`},
+      {en:`private members are invisible to every class, including Vehicle itself`, zh:`private 对所有类都不可见，包括 Vehicle 自己`},
+      {en:`Only static methods can access private members`, zh:`只有静态方法才能访问 private`}
+    ],
+    ans:0,
+    explEn:`<code>protected</code> = this class + subclasses, so <code>Car extends Vehicle</code> can read <code>$this->makeModel</code>; <code>private</code> = only the defining class. That is exactly why the demo declares <code>makeModel</code> protected — Car needs it.`,
+    explZh:`protected = 本类 + 子类可见（Car extends Vehicle 能读 $this->makeModel）；private = 只有定义它的类可见。demo 之所以把 makeModel 声明为 protected，正是因为 Car 需要用它。`
+  },
+  {
+    id:"C10", level:"med", tag:"Inheritance",
+    en:`In <code>Dessert::__construct(string $name, int $calories)</code>, what does the call <code>parent::__construct($name)</code> do?`,
+    zh:`Dessert::__construct(string $name, int $calories) 中的 parent::__construct($name) 做了什么？`,
+    opts:[
+      {en:`It creates a second, independent Food object`, zh:`再创建一个独立的 Food 对象`},
+      {en:`It runs Food's constructor to initialize the inherited $name, then Dessert adds its own logic — augmentation`, zh:`执行 Food 的构造函数初始化继承来的 $name，然后 Dessert 再加自己的逻辑——这就是增强（augmentation）`},
+      {en:`It does nothing because Food has no constructor`, zh:`什么都不做，因为 Food 没有构造函数`},
+      {en:`It replaces Dessert's constructor with Food's entirely`, zh:`用 Food 的构造函数完全替换 Dessert 的构造函数`}
+    ],
+    ans:1,
+    explEn:`<code>Food</code>'s constructor sets the protected <code>$name</code>; <code>Dessert</code> then augments it with <code>$this->setCalories($calories)</code>. The same idea repeats in <code>Dessert::__toString()</code>: it calls <code>parent::__toString()</code> and appends the calories text, so <code>print $food</code> (where $food = new Dessert('Apple pie',100)) prints both parts.`,
+    explZh:`Food 的构造函数负责设置 protected $name；Dessert 再用 $this->setCalories($calories) 增强。同样思路也用在 Dessert::__toString() 里：先调 parent::__toString() 再追加卡路里文字，所以 print $food（$food = new Dessert('Apple pie',100)）会输出两部分内容。`
   }
 ];
 
 const TOTAL = QUESTIONS.length;
 const listA = document.getElementById("listA");
 const listB = document.getElementById("listB");
+const listCEasy = document.getElementById("listCEasy");
+const listCMed = document.getElementById("listCMed");
 
 function qHTML(q){
   const lvl = q.level === "easy"
@@ -470,8 +627,10 @@ function qHTML(q){
 }
 
 function render(){
-  listA.innerHTML = QUESTIONS.filter(q => q.level === "easy").map(qHTML).join("");
-  listB.innerHTML = QUESTIONS.filter(q => q.level !== "easy").map(qHTML).join("");
+  listA.innerHTML = QUESTIONS.filter(q => q.id[0] === "A").map(qHTML).join("");
+  listB.innerHTML = QUESTIONS.filter(q => q.id[0] === "B").map(qHTML).join("");
+  listCEasy.innerHTML = QUESTIONS.filter(q => q.id[0] === "C" && q.level === "easy").map(qHTML).join("");
+  listCMed.innerHTML = QUESTIONS.filter(q => q.id[0] === "C" && q.level !== "easy").map(qHTML).join("");
   document.querySelectorAll(".q").forEach(article => {
     article.querySelectorAll("button.opt").forEach(btn => {
       btn.addEventListener("click", () => answer(article, parseInt(btn.dataset.i, 10)));
@@ -499,14 +658,16 @@ function answer(article, i){
 }
 
 function updateScores(){
-  let answered = 0, correct = 0, easyC = 0, medC = 0;
+  let answered = 0, correct = 0, easyC = 0, medC = 0, oopC = 0;
   QUESTIONS.forEach(q => {
     const el = document.getElementById("q-" + q.id);
     if (el && el.classList.contains("answered")) {
       answered++;
       if (el.dataset.ok === "1") {
         correct++;
-        if (q.level === "easy") easyC++; else medC++;
+        if (q.id[0] === "A") easyC++;
+        else if (q.id[0] === "B") medC++;
+        else oopC++;
       }
     }
   });
@@ -514,11 +675,12 @@ function updateScores(){
   document.getElementById("sCorrect").textContent = correct;
   document.getElementById("sEasy").textContent = easyC;
   document.getElementById("sMed").textContent = medC;
+  document.getElementById("sOop").textContent = oopC;
   const done = document.getElementById("doneMsg");
   if (answered === TOTAL) {
     done.classList.remove("hidden");
-    done.textContent = "All 22 questions answered — Final score: " + correct + "/" + TOTAL +
-      " (Easy " + easyC + "/10 · Medium " + medC + "/12). " +
+    done.textContent = "All " + TOTAL + " questions answered — Final score: " + correct + "/" + TOTAL +
+      " (Easy " + easyC + "/10 · Medium " + medC + "/12 · OOP " + oopC + "/10). " +
       (correct === TOTAL ? "Perfect! 考试稳了。" : "复习错题对应的知识点后，点上方 Reset Quiz 再战一次！");
   } else {
     done.classList.add("hidden");
