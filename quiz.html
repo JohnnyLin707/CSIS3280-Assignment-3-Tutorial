@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assignment 3 Practice Quiz — Predicted Multiple-Choice Questions</title>
+<style>
+  :root{
+    --blue:#0d6efd; --ink:#1f2933; --muted:#5b6b79; --line:#e3e8ee;
+    --bg:#f7f9fb; --card:#ffffff; --code:#0f172a; --codeInk:#dbe4f0;
+    --add:#0a7d43; --rep:#b45309; --keep:#64748b;
+    --rose:#e11d48; --amber:#d97706; --emerald:#0a7d43;
+    --primary-soft:#eff6ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px 70px}
+  header.top{background:linear-gradient(135deg,#0b5ed7,#0d6efd);color:#fff;padding:32px 0 26px}
+  header.top h1{margin:0 0 8px;font-size:26px}
+  header.top p{margin:0;opacity:.92;font-size:14.5px}
+  .backbar{margin-bottom:14px}
+  .backbar a{color:#fff;opacity:.92;margin-right:20px;font-size:13.5px;text-decoration:none;border-bottom:1px dotted rgba(255,255,255,.6)}
+  .backbar a:hover{opacity:1}
+  .topics{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .topics span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:14px;padding:3px 11px;font-size:12px}
+  .scorebar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.97);border-bottom:1px solid var(--line);box-shadow:0 1px 6px rgba(15,23,42,.06);padding:9px 0}
+  .chips{display:flex;gap:10px;align-items:center;flex-wrap:wrap;max-width:1080px;margin:0 auto;padding:0 20px}
+  .chip{background:#eef2f7;border:1px solid var(--line);border-radius:20px;padding:4px 13px;font-size:13px;color:var(--ink)}
+  .chip b{color:var(--blue)}
+  button.reset{margin-left:auto;padding:6px 16px;border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit}
+  button.reset:hover{border-color:var(--rose);color:var(--rose)}
+  section.part{margin-top:30px}
+  h2.part{display:flex;align-items:center;gap:10px;margin:0 0 16px;font-size:19px;border:none;padding:0}
+  h2.part::before{content:"";display:inline-block;width:5px;height:22px;border-radius:3px}
+  h2.part.a::before{background:var(--emerald)}
+  h2.part.b::before{background:var(--amber)}
+  h2.part small{font-size:12.5px;color:var(--muted);font-weight:400}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:18px}
+  .qhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .qnum{background:var(--blue);color:#fff;border-radius:6px;padding:2px 9px;font-size:12.5px;font-weight:700}
+  .lvl{font-size:11.5px;padding:2px 9px;border-radius:10px;font-weight:600}
+  .lvl.easy{background:#e7f6ee;color:var(--emerald)}
+  .lvl.med{background:#fdf3e0;color:var(--amber)}
+  .ttag{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:2px 9px;background:#f8fafc}
+  .status{margin-left:auto;font-weight:700;font-size:13px}
+  .status.ok{color:var(--emerald)} .status.no{color:var(--rose)}
+  .qgrid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:12px}
+  .pane{padding:14px 16px}
+  .pane.en{background:#fff}
+  .pane.zh{background:#f8fafc;border-left:1px solid var(--line)}
+  .lang{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:700}
+  .qtext{font-size:14.5px;line-height:1.65}
+  .opts{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+  button.opt{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;padding:9px 12px;border:1.5px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;font-size:13.8px;line-height:1.55;color:var(--ink);font-family:inherit;transition:border-color .15s,background .15s}
+  button.opt:hover{border-color:var(--blue);background:var(--primary-soft)}
+  .opt .key{font-weight:800;color:var(--blue);min-width:16px}
+  .opt.correct{border-color:var(--emerald)!important;background:#e9f9f0!important}
+  .opt.wrong{border-color:var(--rose)!important;background:#fdeef2!important}
+  .opt.correct .key{color:var(--emerald)} .opt.wrong .key{color:var(--rose)}
+  .zhopt{display:flex;gap:10px;align-items:flex-start;width:100%;padding:9px 12px;border:1.5px dashed var(--line);border-radius:8px;background:transparent;font-size:13.8px;line-height:1.55;color:#37506b}
+  article.answered button.opt{cursor:default}
+  article.answered button.opt:hover{border-color:var(--line);background:#fff}
+  article.answered button.opt.correct:hover{border-color:var(--emerald)!important;background:#e9f9f0!important}
+  article.answered button.opt.wrong:hover{border-color:var(--rose)!important;background:#fdeef2!important}
+  .expl{margin-top:12px;background:#eef6ff;border:1px solid #cfe0f5;border-radius:8px;padding:12px 15px;font-size:13.5px;line-height:1.7}
+  .expl .zh{display:block;margin-top:8px;color:#37506b;border-top:1px dashed #cfe0f5;padding-top:8px}
+  code{background:#eef2f7;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12.8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#0b5ed7}
+  .hidden{display:none}
+  .done{background:#e9f9f0;border:1px solid #bfe8cf;border-radius:12px;padding:16px 20px;font-size:14.5px;font-weight:600;color:var(--emerald);margin-top:26px}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px}
+  @media (max-width:780px){
+    .qgrid{grid-template-columns:1fr}
+    .pane.zh{border-left:none;border-top:1px solid var(--line)}
+    .backbar a{margin-right:12px}
+    button.reset{margin-left:0}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="backbar">
+      <a href="index.html">&larr; Back to Tutorial Home</a>
+      <a href="tutorial-zh.html">中文教程</a>
+      <a href="assign3-step-by-step-zh.html">保姆级做题教程</a>
+    </div>
+    <h1>Assignment 3 Practice Quiz — Predicted Exam Questions</h1>
+    <p>22 道预测选择题，全部来自本教程、starter 源码与课堂 demo（week04–week06）。Part A 为简单必考题（10 题），Part B 为中等难度题（12 题）。点击左侧英文选项作答，右侧为原题中文对照翻译，答完立即显示对错与双语解析。</p>
+    <div class="topics">
+      <span>Front Controller 路由</span>
+      <span>Session 认证与授权</span>
+      <span>filter 输入验证</span>
+      <span>CSV 文件读写</span>
+      <span>Templates 与作用域</span>
+      <span>Sticky Form</span>
+      <span>常见踩坑</span>
+      <span>Week04–06 Demo 要点</span>
+    </div>
+  </div>
+</header>
+
+<div class="scorebar">
+  <div class="chips">
+    <span class="chip">Answered <b id="sAnswered">0</b>/22</span>
+    <span class="chip">Correct <b id="sCorrect">0</b></span>
+    <span class="chip">Part A · Easy <b id="sEasy">0</b>/10</span>
+    <span class="chip">Part B · Medium <b id="sMed">0</b>/12</span>
+    <button class="reset" id="btnReset">Reset Quiz</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section class="part" id="partA">
+    <h2 class="part a">Part A · Easy <small>（简单必考基础题 × 10，答对是底线）</small></h2>
+    <div id="listA"></div>
+  </section>
+
+  <section class="part" id="partB">
+    <h2 class="part b">Part B · Medium <small>（中等难度必考题 × 12，拉开差距的地方）</small></h2>
+    <div id="listB"></div>
+  </section>
+
+  <div class="done hidden" id="doneMsg"></div>
+
+  <footer>Assignment 3 Practice Quiz · Built from the tutorial, starter code and week04–week06 demos · <a href="index.html">Tutorial Home</a></footer>
+</div>
+
+<script>
+const QUESTIONS = [
+  /* ================= PART A · EASY ================= */
+  {
+    id:"A1", level:"easy", tag:"Front Controller",
+    en:`Which file is the single entry point (front controller) that receives every browser request in this project?`,
+    zh:`在本项目中，接收所有浏览器请求的唯一入口（前端控制器）是哪个文件？`,
+    opts:[
+      {en:`templates/header.php`, zh:`templates/header.php（页头模板）`},
+      {en:`public/index.php`, zh:`public/index.php（公共入口文件）`},
+      {en:`src/action_controller.php`, zh:`src/action_controller.php（动作控制器）`},
+      {en:`data/students.csv`, zh:`data/students.csv（数据文件）`}
+    ],
+    ans:1,
+    explEn:`Every request goes to <code>public/index.php</code>: it starts the session, requires the four src files, then routes by <code>?action=</code> with a <code>switch</code>.`,
+    explZh:`所有请求都进入 public/index.php：它开启会话、require 四个 src 文件，再用 switch 按 ?action= 分发。`
+  },
+  {
+    id:"A2", level:"easy", tag:"Session",
+    en:`Which function must be called at the top of public/index.php before the app can use $_SESSION?`,
+    zh:`必须先在 public/index.php 顶部调用哪个函数，应用才能使用 $_SESSION？`,
+    opts:[
+      {en:`session_destroy()`, zh:`session_destroy()（销毁会话）`},
+      {en:`setcookie()`, zh:`setcookie()（设置 Cookie）`},
+      {en:`session_start()`, zh:`session_start()（启动会话）`},
+      {en:`isset()`, zh:`isset()（判断变量是否存在）`}
+    ],
+    ans:2,
+    explEn:`<code>session_start()</code> starts or resumes the session (week05 CH14 demo). Without it, <code>$_SESSION</code> does not work on that request.`,
+    explZh:`session_start() 用于启动/恢复会话（week05 CH14 演示）。不先调用它，当前请求中 $_SESSION 无法使用。`
+  },
+  {
+    id:"A3", level:"easy", tag:"Routing",
+    en:`How does index.php read the <code>action</code> value from the URL query string (for example <code>/?action=data</code>)?`,
+    zh:`index.php 如何从 URL 查询字符串中读取 action 的值（例如 /?action=data）？`,
+    opts:[
+      {en:`$_REQUEST['action']`, zh:`$_REQUEST['action']`},
+      {en:`echo $_GET['action']`, zh:`echo $_GET['action']`},
+      {en:`filter_input(INPUT_GET, 'action')`, zh:`filter_input(INPUT_GET, 'action')`},
+      {en:`$_SERVER['QUERY_STRING']`, zh:`$_SERVER['QUERY_STRING']`}
+    ],
+    ans:2,
+    explEn:`<code>$action = filter_input(INPUT_GET, 'action');</code> — the course prefers <code>filter_input</code> over raw <code>$_GET</code> (week04 demo 01), then <code>switch ($action)</code> picks the handler (CH13).`,
+    explZh:`$action = filter_input(INPUT_GET, 'action'); 课程推荐用 filter_input 代替直接使用 $_GET（更安全，week04 示例 01），然后用 switch ($action) 分发（CH13）。`
+  },
+  {
+    id:"A4", level:"easy", tag:"Auth Roles",
+    en:`After a successful login, <code>processLogin()</code> shows which page to admin and which to the normal user?`,
+    zh:`登录成功后，processLogin() 分别给 admin 和普通用户显示哪个页面？`,
+    opts:[
+      {en:`admin → data view; user → data-entry form`, zh:`admin → 数据页；user → 录入表单页`},
+      {en:`admin → data-entry form; user → data view`, zh:`admin → 录入表单页；user → 数据页`},
+      {en:`both go to the home page`, zh:`两者都回到首页`},
+      {en:`both go to the data-entry form`, zh:`两者都进入录入表单页`}
+    ],
+    ans:1,
+    explEn:`Inside <code>processLogin()</code>: <code>if ($username == 'admin') { showForm([]); } else { showData(readData(DATA_FILE)); }</code> — Fig. 3 and Fig. 12.`,
+    explZh:`processLogin() 中：if ($username == 'admin') { showForm([]); } else { showData(readData(DATA_FILE)); } 对应图 3 与图 12。`
+  },
+  {
+    id:"A5", level:"easy", tag:"Validation",
+    en:`In <code>validate()</code>, which PHP filter constant is used to validate the student email address?`,
+    zh:`在 validate() 中，用哪个 PHP filter 常量来验证学生邮箱？`,
+    opts:[
+      {en:`FILTER_VALIDATE_URL`, zh:`FILTER_VALIDATE_URL（验证 URL）`},
+      {en:`FILTER_SANITIZE_EMAIL`, zh:`FILTER_SANITIZE_EMAIL（清理邮箱字符串）`},
+      {en:`FILTER_VALIDATE_EMAIL`, zh:`FILTER_VALIDATE_EMAIL（验证邮箱）`},
+      {en:`FILTER_VALIDATE_REGEXP`, zh:`FILTER_VALIDATE_REGEXP（正则验证）`}
+    ],
+    ans:2,
+    explEn:`<code>filter_var($studentEmail, FILTER_VALIDATE_EMAIL)</code>. <code>FILTER_SANITIZE_EMAIL</code> only cleans the string — it does not check whether it is a valid address (sanitize vs validate).`,
+    explZh:`filter_var($studentEmail, FILTER_VALIDATE_EMAIL)。注意 FILTER_SANITIZE_EMAIL 只是清理字符串，并不能判断邮箱是否有效（sanitize 清理 vs validate 验证）。`
+  },
+  {
+    id:"A6", level:"easy", tag:"Session",
+    en:`What does <code>logout()</code> do in this project when the user clicks Logout?`,
+    zh:`本项目中，用户点击 Logout 时 logout() 做了什么？`,
+    opts:[
+      {en:`It deletes data/students.csv`, zh:`删除 data/students.csv`},
+      {en:`It clears $_SESSION and the flow returns to the home page`, zh:`清空 $_SESSION，流程回到首页`},
+      {en:`It calls session_destroy() and expires the session cookie (killSession)`, zh:`调用 session_destroy() 并让会话 Cookie 过期（killSession）`},
+      {en:`It redirects using header('Location: home.php')`, zh:`用 header('Location: home.php') 重定向`}
+    ],
+    ans:1,
+    explEn:`A3's <code>logout()</code> sets <code>$_SESSION = []</code> and the routing continues to <code>showHome('')</code> (Fig. 11). The fuller <code>killSession()</code> with <code>session_destroy()</code> + cookie expiry is from the week05 CH14 demo — and note this project never uses <code>header('Location: ...')</code>.`,
+    explZh:`作业的 logout() 只做 $_SESSION = []，随后路由回到 showHome('')（图 11）。带 session_destroy() 和 Cookie 过期的完整版 killSession() 出现在 week05 CH14 demo——另外注意本项目从未使用 header('Location: ...') 重定向。`
+  },
+  {
+    id:"A7", level:"easy", tag:"Templates",
+    en:`How do <code>showHome()</code>, <code>showForm()</code> and <code>showData()</code> display their pages?`,
+    zh:`showHome()、showForm()、showData() 是如何显示各自页面的？`,
+    opts:[
+      {en:`They echo long HTML strings`, zh:`用 echo 输出大段 HTML 字符串`},
+      {en:`They redirect with header('Location: ...')`, zh:`用 header('Location: ...') 重定向`},
+      {en:`They require_once the matching template file from templates/`, zh:`require_once templates/ 里对应的模板文件`},
+      {en:`They read the CSV file directly`, zh:`直接读取 CSV 文件`}
+    ],
+    ans:2,
+    explEn:`Each one just does <code>require_once __DIR__ . '/../templates/xxx.php';</code> — the templates build the page, and every template requires <code>header.php</code> first.`,
+    explZh:`每个函数只是 require_once __DIR__ . '/../templates/xxx.php'; 由模板负责组装页面，且每个模板都会先引入 header.php。`
+  },
+  {
+    id:"A8", level:"easy", tag:"File I/O",
+    en:`On the very first run (<code>students.csv</code> does not exist yet), what does the Data page show?`,
+    zh:`第一次运行（students.csv 还不存在）时，Data 页面会显示什么？`,
+    opts:[
+      {en:`A PHP fatal error`, zh:`PHP 致命错误`},
+      {en:`"Currently our data is still empty. Please fill out the form"`, zh:`"Currently our data is still empty. Please fill out the form"（数据仍为空提示）`},
+      {en:`An empty table with column headers only`, zh:`只有表头的空表格`},
+      {en:`It creates students.csv immediately`, zh:`立即自动创建 students.csv`}
+    ],
+    ans:1,
+    explEn:`<code>readData()</code> checks <code>file_exists()</code> first and returns <code>[]</code> when the file is missing; <code>data.php</code> then prints the Fig. 5 heading. The CSV is only created by <code>writeData()</code> after the first successful submit (Fig. 10).`,
+    explZh:`readData() 先用 file_exists() 判断，文件不存在时返回 []，data.php 随之输出图 5 的提示标题。CSV 只会在第一次成功提交后由 writeData() 创建（图 10）。`
+  },
+  {
+    id:"A9", level:"easy", tag:"Week04 Demo",
+    en:`In the class demos, which check determines whether a form has just been submitted (postback)?`,
+    zh:`课堂 demo 中，用哪个判断来确定表单刚刚被提交（postback 回发）？`,
+    opts:[
+      {en:`$_SERVER['REQUEST_METHOD'] === 'POST'`, zh:`$_SERVER['REQUEST_METHOD'] === 'POST'`},
+      {en:`isset($_SESSION['submitted'])`, zh:`isset($_SESSION['submitted'])`},
+      {en:`$_GET['submit'] == 1`, zh:`$_GET['submit'] == 1`},
+      {en:`count($_FILES) > 0`, zh:`count($_FILES) > 0`}
+    ],
+    ans:0,
+    explEn:`week04 demo 06 and CH16 both use <code>$isSubmitted = ($_SERVER['REQUEST_METHOD'] == 'POST')</code> to decide between "show the form" and "process the form".`,
+    explZh:`week04 示例 06 与 CH16 都用 $isSubmitted = ($_SERVER['REQUEST_METHOD'] == 'POST') 来区分"显示表单"和"处理表单"。`
+  },
+  {
+    id:"A10", level:"easy", tag:"Running",
+    en:`Which command correctly starts the PHP development server for this project?`,
+    zh:`哪个命令能正确启动本项目的 PHP 开发服务器？`,
+    opts:[
+      {en:`php -S localhost:3000`, zh:`php -S localhost:3000`},
+      {en:`php -S localhost:3000 -t assign3_starter/public`, zh:`php -S localhost:3000 -t assign3_starter/public`},
+      {en:`php -f public/index.php`, zh:`php -f public/index.php`},
+      {en:`php -S localhost:80 -t templates`, zh:`php -S localhost:80 -t templates`}
+    ],
+    ans:1,
+    explEn:`<code>php -S localhost:3000 -t assign3_starter/public</code> — the templates' links start with <code>/</code>, so the document root (<code>-t</code>) must be the <code>public/</code> folder (site root).`,
+    explZh:`php -S localhost:3000 -t assign3_starter/public —— 模板里的链接以 / 开头，所以文档根目录（-t）必须指向 public/（站点根目录），否则 CSS 和链接全部失效。`
+  },
+
+  /* ================= PART B · MEDIUM ================= */
+  {
+    id:"B1", level:"med", tag:"Paths",
+    en:`Why do the require paths use <code>__DIR__ . '/../src/xxx.php'</code> instead of a plain <code>'../src/xxx.php'</code>?`,
+    zh:`为什么 require 路径要写成 __DIR__ . '/../src/xxx.php'，而不是直接 '../src/xxx.php'？`,
+    opts:[
+      {en:`Because __DIR__ is a shorter way to write './'`, zh:`因为 __DIR__ 是 './' 的简写`},
+      {en:`Because ../ is not allowed inside require_once`, zh:`因为 require_once 里不允许用 ../`},
+      {en:`Relative paths resolve against the PHP working directory and break if the server is started from another folder; __DIR__ always points to the directory of the current file`, zh:`相对路径按 PHP 进程的工作目录解析，换目录启动服务器就会失效；__DIR__ 永远指向当前文件所在目录`},
+      {en:`It is purely a code style convention with no effect`, zh:`只是代码风格约定，没有任何实际作用`}
+    ],
+    ans:2,
+    explEn:`<code>../</code> is resolved only against the PHP process working directory, which breaks when the server is started from a different folder. <code>__DIR__</code> always points at the directory of the file containing the code, so the path is stable.`,
+    explZh:`../ 只会按 PHP 进程的工作目录解析，从别的目录启动服务器就会失效；__DIR__ 永远指向当前文件所在目录，因此路径稳定可靠。这是实操中最常见的"页面空白/找不到文件"问题根源之一。`
+  },
+  {
+    id:"B2", level:"med", tag:"Validation",
+    en:`Following the assignment rule "use the PHP filter extension wherever possible", which code validates the exactly-10-digit student ID?`,
+    zh:`按照作业"尽量使用 PHP filter 扩展"的要求，哪段代码能验证"恰好 10 位数字"的学号？`,
+    opts:[
+      {en:`filter_var($studentID, FILTER_VALIDATE_INT)`, zh:`filter_var($studentID, FILTER_VALIDATE_INT)`},
+      {en:`filter_var($studentID, FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => '/^\\d{10}$/']])`, zh:`filter_var + FILTER_VALIDATE_REGEXP + /^\\d{10}$/`},
+      {en:`preg_match('/\\d{10}/', $studentID)`, zh:`preg_match('/\\d{10}/', $studentID)（无锚点）`},
+      {en:`is_string($studentID) && strlen($studentID) <= 10`, zh:`is_string($studentID) && strlen($studentID) <= 10`}
+    ],
+    ans:1,
+    explEn:`<code>FILTER_VALIDATE_REGEXP</code> with <code>/^\\d{10}$/</code> — the <code>^</code> and <code>$</code> anchors force the whole string to be exactly 10 digits. Without anchors (option C) <code>'12345abc67890'</code> would also match; <code>FILTER_VALIDATE_INT</code> rejects the leading zero in <code>'0123456789'</code>. Error message: "ID should be ten digit number".`,
+    explZh:`FILTER_VALIDATE_REGEXP 配合 /^\\d{10}$/ —— ^ 和 $ 锚点保证整串恰好 10 位。没有锚点（选项 C）时 '12345abc67890' 也能匹配；FILTER_VALIDATE_INT 会因前导 0 拒绝 '0123456789'。对应错误提示 "ID should be ten digit number"。`
+  },
+  {
+    id:"B3", level:"med", tag:"Validation",
+    en:`Which regex matches exactly the allowed terms "Winter 2020" through "Fall 2026" (Fall / Winter / Summer)?`,
+    zh:`哪个正则能精确匹配允许的学期范围"Winter 2020"到"Fall 2026"（Fall / Winter / Summer 三季）？`,
+    opts:[
+      {en:`/^(Winter|Fall) 20[0-2][0-9]$/`, zh:`/^(Winter|Fall) 20[0-2][0-9]$/（漏了 Summer，年份范围过大）`},
+      {en:`/^(Fall|Winter|Summer) 20(2[0-6])$/`, zh:`/^(Fall|Winter|Summer) 20(2[0-6])$/`},
+      {en:`/^(Fall|Winter|Summer) [0-9]{4}$/`, zh:`/^(Fall|Winter|Summer) [0-9]{4}$/（任意年份都通过）`},
+      {en:`/.*Fall|Winter|Summer 2020-2026.*/`, zh:`/.*Fall|Winter|Summer 2020-2026.*/（几乎什么都匹配）`}
+    ],
+    ans:1,
+    explEn:`<code>/^(Fall|Winter|Summer) 20(2[0-6])$/</code> matches years 2020–2026 (<code>20</code> + <code>2[0-6]</code> gives 2020…2026). The matching error message: "Please enter the correct term between Winter 2020 until Fall 2026".`,
+    explZh:`/^(Fall|Winter|Summer) 20(2[0-6])$/ 能精确匹配 2020–2026 年（20 + 2[0-6] 得到 2020…2026）。对应错误提示："Please enter the correct term between Winter 2020 until Fall 2026"。`
+  },
+  {
+    id:"B4", level:"med", tag:"File I/O",
+    en:`In <code>writeData()</code>, how is a new record appended to <code>students.csv</code> safely?`,
+    zh:`在 writeData() 中，如何安全地把一条新记录追加到 students.csv？`,
+    opts:[
+      {en:`fopen($fileName, 'w') then fwrite($handle, $str)`, zh:`fopen($fileName, 'w') 再 fwrite($handle, $str)`},
+      {en:`file_put_contents($fileName, $str . PHP_EOL)`, zh:`file_put_contents($fileName, $str . PHP_EOL)（无追加标志）`},
+      {en:`touch() creates a missing file first, then file_put_contents($fileName, $str . PHP_EOL, FILE_APPEND | LOCK_EX)`, zh:`先 touch() 创建缺失的文件，再 file_put_contents($fileName, $str . PHP_EOL, FILE_APPEND | LOCK_EX)`},
+      {en:`file_get_contents() + echo`, zh:`file_get_contents() + echo`}
+    ],
+    ans:2,
+    explEn:`If the file does not exist, <code>touch()</code> creates it first; then <code>file_put_contents($fileName, $str . PHP_EOL, FILE_APPEND | LOCK_EX)</code> appends one line. <code>FILE_APPEND</code> prevents overwriting and <code>LOCK_EX</code> takes an exclusive lock; <code>fopen 'w'</code> would truncate the whole file.`,
+    explZh:`文件不存在时先用 touch() 创建；再 file_put_contents($fileName, $str . PHP_EOL, FILE_APPEND | LOCK_EX) 追加一行。FILE_APPEND 防止覆盖已有数据、LOCK_EX 加排他锁；而 fopen 'w' 会清空整个文件。`
+  },
+  {
+    id:"B5", level:"med", tag:"File I/O",
+    en:`Which statement about one row of <code>data/students.csv</code> is correct?`,
+    zh:`关于 data/students.csv 的一行数据，哪个说法是正确的？`,
+    opts:[
+      {en:`It stores all 6 form fields including Term`, zh:`存储全部 6 个表单字段，包括 Term`},
+      {en:`It stores Name, ID, Email, Dept, Status — Term is not stored`, zh:`存储 Name, ID, Email, Dept, Status —— Term 不存储`},
+      {en:`It stores only the student name and ID`, zh:`只存学生姓名和学号`},
+      {en:`It stores Name, ID, Email, Term, Dept`, zh:`存储 Name, ID, Email, Term, Dept`}
+    ],
+    ans:1,
+    explEn:`The CSV line has 5 columns: <code>Name,ID,Email,Dept,Status</code> (Fig. 10). There is no Term column — on the data page, the "Term" column actually shows the email (Fig. 9).`,
+    explZh:`CSV 一行共 5 列：Name,ID,Email,Dept,Status（图 10）。并没有 Term 列——数据页表格中的"Term"列实际显示的是邮箱（图 9）。这是验收时很容易踩的对比点。`
+  },
+  {
+    id:"B6", level:"med", tag:"Architecture",
+    en:`Why does <code>processForm()</code> set <code>$GLOBALS['formSaved'] = true</code> before calling <code>showForm([])</code> again?`,
+    zh:`为什么 processForm() 在再次调用 showForm([]) 之前要设置 $GLOBALS['formSaved'] = true？`,
+    opts:[
+      {en:`To pass the "saved" state to the same form template without changing showForm()'s required signature`, zh:`在不改变 showForm() 规定签名的前提下，把"已保存"状态传给同一个表单模板`},
+      {en:`Because $_SESSION gets cleared during validation`, zh:`因为验证过程中 $_SESSION 被清空了`},
+      {en:`Because filter_input() requires a global flag`, zh:`因为 filter_input() 需要全局标志`},
+      {en:`To write a log entry into the CSV file`, zh:`为了往 CSV 文件里写一条日志`}
+    ],
+    ans:0,
+    explEn:`The success view (Fig. 8) reuses <code>form.php</code> but with every control disabled. <code>showForm($errors)</code>'s signature cannot change, so a global flag carries the state; <code>form.php</code> reads it with <code>$GLOBALS['formSaved'] ?? false</code>.`,
+    explZh:`成功视图（图 8）复用 form.php 但要禁用所有控件。showForm($errors) 的签名不能改，所以用全局标志传递状态；form.php 里用 $GLOBALS['formSaved'] ?? false 读取。这是"函数签名不许改"约束下的典型解决方案。`
+  },
+  {
+    id:"B7", level:"med", tag:"Templates · Pitfall",
+    en:`When generating the department dropdown from <code>$deptArray</code> (keys: CSIS / BUS / MAR), what must the <code>&lt;option&gt;</code> value be?`,
+    zh:`用 $deptArray（键为 CSIS / BUS / MAR）生成院系下拉框时，&lt;option&gt; 的 value 必须是什么？`,
+    opts:[
+      {en:`The full department name, exactly as written in template_form.html (e.g. value="Computing")`, zh:`完整院系名称，完全照抄 template_form.html（如 value="Computing"）`},
+      {en:`The array key: &lt;option value="&lt;?= $code ?&gt;"&gt;&lt;?= $name ?&gt;&lt;/option&gt;`, zh:`数组的键：&lt;option value="&lt;?= $code ?&gt;"&gt;&lt;?= $name ?&gt;&lt;/option&gt;`},
+      {en:`The array value: &lt;option value="&lt;?= $name ?&gt;"&gt;&lt;?= $name ?&gt;&lt;/option&gt;`, zh:`数组的值：&lt;option value="&lt;?= $name ?&gt;"&gt;&lt;?= $name ?&gt;&lt;/option&gt;`},
+      {en:`It does not matter — any value works`, zh:`无所谓，任何 value 都可以`}
+    ],
+    ans:1,
+    explEn:`The sample HTML uses full names as values, but the assignment provides <code>$deptArray</code> with keys <code>CSIS/BUS/MAR</code> and Fig. 10 shows the CSV storing the codes (<code>CSIS</code>, <code>MAR</code>). Use the key as the value and the name as the label — the tutorial calls this the biggest copy-paste pitfall of the whole project.`,
+    explZh:`示例 HTML 用完整名称作 value，但作业提供的 $deptArray 键是 CSIS/BUS/MAR，且图 10 显示 CSV 存的是代码（CSIS、MAR）。必须"键作 value、名作标签"——教程称之为全项目最大的照抄坑。`
+  },
+  {
+    id:"B8", level:"med", tag:"Architecture",
+    en:`Why can <code>form.php</code> use <code>$errors</code> directly without any extra code?`,
+    zh:`为什么 form.php 可以直接使用 $errors 变量，无需任何额外代码？`,
+    opts:[
+      {en:`PHP makes every variable global inside templates`, zh:`PHP 会自动把模板里的变量都变成全局变量`},
+      {en:`form.php calls extract($_POST) first`, zh:`form.php 先调用了 extract($_POST)`},
+      {en:`showForm() requires the template, and a required file executes in the caller's function scope, so $errors (the parameter) is already visible`, zh:`showForm() 用 require 引入模板，被引入文件在调用者函数作用域内执行，所以参数 $errors 本来就可见`},
+      {en:`$errors is defined in header.php`, zh:`$errors 定义在 header.php 里`}
+    ],
+    ans:2,
+    explEn:`<code>showHome()/showForm()/showData()</code> pull the templates in with <code>require</code>, so templates run in function scope and the parameters (<code>$loginError / $errors / $dataArray</code>) are directly usable — no extra plumbing needed.`,
+    explZh:`showHome()/showForm()/showData() 用 require 引入模板，模板因此在函数作用域内执行，函数参数（$loginError / $errors / $dataArray）可直接使用——不需要任何额外的传递代码。`
+  },
+  {
+    id:"B9", level:"med", tag:"Authorization",
+    en:`Which statement about the <code>/?action=form</code> route is correct?`,
+    zh:`关于 /?action=form 路由，哪个说法是正确的？`,
+    opts:[
+      {en:`Any logged-in user can open and submit the form`, zh:`任何已登录用户都能打开并提交表单`},
+      {en:`Only users with isAdmin() true reach showForm()/processForm(); everyone else is sent back to the home page`, zh:`只有 isAdmin() 为真的用户才能进入 showForm()/processForm()；其他人一律被弹回首页`},
+      {en:`The route is public because forms are always public`, zh:`该路由是公开的，因为表单总是公开的`},
+      {en:`Only the normal user may access it; admin cannot`, zh:`只有普通 user 能访问，admin 反而不能`}
+    ],
+    ans:1,
+    explEn:`<code>index.php</code> checks <code>isAdmin()</code> before showing or processing the form. A guest or non-admin (e.g. <code>user</code>) is bounced to <code>showHome('')</code>; the nav also hides the Input Form link for them (Fig. 12), and manual GET/POST access leaves the CSV unchanged.`,
+    explZh:`index.php 在显示或处理表单前先用 isAdmin() 判断。访客或非 admin（如 user）都会被弹回 showHome('')；导航栏也会为其隐藏 Input Form 链接（图 12），手动 GET/POST 访问不会改动 CSV——这就是授权（Authorization）与认证（Authentication）的区别。`
+  },
+  {
+    id:"B10", level:"med", tag:"Week04 Demo",
+    en:`What is the purpose of the sticky form technique used in <code>form.php</code>?`,
+    zh:`form.php 中使用的"粘性表单"（sticky form）技术目的是什么？`,
+    opts:[
+      {en:`To keep the values the user typed after a failed validation, by echoing them back with value / selected / checked`, zh:`验证失败后用 value / selected / checked 把用户已输入的值回显，避免清空`},
+      {en:`To permanently disable the form after one submit`, zh:`提交一次后永久禁用表单`},
+      {en:`To cache the rendered page in the browser`, zh:`把渲染后的页面缓存在浏览器里`},
+      {en:`To store the whole form in $_SESSION`, zh:`把整个表单存进 $_SESSION`}
+    ],
+    ans:0,
+    explEn:`Each field is read back with <code>filter_input(INPUT_POST, ...)</code> and echoed into <code>value / selected / checked</code>, so an invalid submit does not wipe the input (the pattern comes from week04 demo 06). Disabled controls are a separate feature for the saved state (Fig. 8).`,
+    explZh:`每个字段用 filter_input(INPUT_POST, ...) 读回并回显到 value / selected / checked，验证失败时不会清空用户已输入的内容（该模式出自 week04 示例 06）。"禁用控件"是保存成功后的另一项独立功能（图 8）。`
+  },
+  {
+    id:"B11", level:"med", tag:"Debugging",
+    en:`<code>index.php</code> calls <code>processLogin()</code> but PHP throws "Uncaught Error: Call to undefined function processLogin()". What is the most likely cause?`,
+    zh:`index.php 调用 processLogin() 时 PHP 报 "Uncaught Error: Call to undefined function processLogin()"，最可能的原因是什么？`,
+    opts:[
+      {en:`The function was defined twice`, zh:`函数被定义了两次`},
+      {en:`session_start() was called twice`, zh:`session_start() 被调用了两次`},
+      {en:`The src file that defines processLogin() was never require_once'd in index.php`, zh:`定义 processLogin() 的 src 文件没有在 index.php 里被 require_once`},
+      {en:`The PHP version is too old for the filter extension`, zh:`PHP 版本太旧，不支持 filter 扩展`}
+    ],
+    ans:2,
+    explEn:`A function only exists after its file has been loaded. <code>index.php</code> must <code>require_once</code> all four src files (sessionManager, file_utility, validation, action_controller) before the <code>switch</code> dispatches to any of them.`,
+    explZh:`函数只有在所属文件被加载后才存在。index.php 必须在 switch 分发之前 require_once 全部四个 src 文件（sessionManager、file_utility、validation、action_controller）。这也是教程强调"先写总入口再写模板"的原因。`
+  },
+  {
+    id:"B12", level:"med", tag:"Week06 OOP",
+    en:`In the week06 <code>Product</code> class, <code>$price</code> is private and <code>setPrice($p)</code> rejects negative values. What happens with <code>$product->price = -5;</code> written outside the class?`,
+    zh:`week06 的 Product 类中 $price 为私有属性，setPrice($p) 会拒绝负数。在类外部执行 $product->price = -5; 会发生什么？`,
+    opts:[
+      {en:`It works and sets the price to -5`, zh:`能正常把价格设为 -5`},
+      {en:`PHP throws a fatal error: cannot access a private property`, zh:`PHP 抛出致命错误：无法访问私有属性`},
+      {en:`The value is silently ignored`, zh:`赋值被静默忽略`},
+      {en:`setPrice() is called automatically instead`, zh:`会自动转而调用 setPrice()`}
+    ],
+    ans:1,
+    explEn:`<code>private</code> properties cannot be read or written from outside the class — PHP raises a fatal error. All changes must go through the setter, which validates the value: that is encapsulation (CH18).`,
+    explZh:`private 私有属性不能在类外读取或写入——PHP 会抛出致命错误。所有修改必须经过 setter，由它来校验数值：这就是封装（CH18）。week06 demo 还演示了继承（extends / abstract / parent::__construct）。`
+  }
+];
+
+const TOTAL = QUESTIONS.length;
+const listA = document.getElementById("listA");
+const listB = document.getElementById("listB");
+
+function qHTML(q){
+  const lvl = q.level === "easy"
+    ? '<span class="lvl easy">Easy</span>' : '<span class="lvl med">Medium</span>';
+  const enOpts = q.opts.map((o,i) =>
+    '<button class="opt" data-i="' + i + '"><span class="key">' + "ABCD"[i] + '</span><span>' + o.en + '</span></button>').join("");
+  const zhOpts = q.opts.map((o,i) =>
+    '<div class="zhopt" data-i="' + i + '"><span class="key">' + "ABCD"[i] + '</span><span>' + o.zh + '</span></div>').join("");
+  return '<article class="q" id="q-' + q.id + '" data-qid="' + q.id + '">' +
+    '<div class="qhead"><span class="qnum">' + q.id + '</span>' + lvl +
+    '<span class="ttag">' + q.tag + '</span><span class="status"></span></div>' +
+    '<div class="qgrid">' +
+      '<div class="pane en"><div class="lang">English · 点击作答</div>' +
+        '<div class="qtext">' + q.en + '</div>' +
+        '<div class="opts">' + enOpts + '</div></div>' +
+      '<div class="pane zh"><div class="lang">中文翻译（对照）</div>' +
+        '<div class="qtext">' + q.zh + '</div>' +
+        '<div class="opts">' + zhOpts + '</div></div>' +
+    '</div>' +
+    '<div class="expl hidden"><b>Explanation:</b> ' + q.explEn +
+      '<span class="zh"><b>中文解析：</b>' + q.explZh + '</span></div>' +
+  '</article>';
+}
+
+function render(){
+  listA.innerHTML = QUESTIONS.filter(q => q.level === "easy").map(qHTML).join("");
+  listB.innerHTML = QUESTIONS.filter(q => q.level !== "easy").map(qHTML).join("");
+  document.querySelectorAll(".q").forEach(article => {
+    article.querySelectorAll("button.opt").forEach(btn => {
+      btn.addEventListener("click", () => answer(article, parseInt(btn.dataset.i, 10)));
+    });
+  });
+  updateScores();
+}
+
+function answer(article, i){
+  if (article.classList.contains("answered")) return;
+  const q = QUESTIONS.find(x => x.id === article.dataset.qid);
+  const ok = (i === q.ans);
+  article.classList.add("answered");
+  article.dataset.ok = ok ? "1" : "0";
+  article.querySelectorAll(".opt[data-i]").forEach(el => {
+    const idx = parseInt(el.dataset.i, 10);
+    if (idx === q.ans) el.classList.add("correct");
+    else if (idx === i && !ok) el.classList.add("wrong");
+  });
+  const st = article.querySelector(".status");
+  st.textContent = ok ? "✓ Correct" : "✗ Wrong — answer: " + "ABCD"[q.ans];
+  st.classList.add(ok ? "ok" : "no");
+  article.querySelector(".expl").classList.remove("hidden");
+  updateScores();
+}
+
+function updateScores(){
+  let answered = 0, correct = 0, easyC = 0, medC = 0;
+  QUESTIONS.forEach(q => {
+    const el = document.getElementById("q-" + q.id);
+    if (el && el.classList.contains("answered")) {
+      answered++;
+      if (el.dataset.ok === "1") {
+        correct++;
+        if (q.level === "easy") easyC++; else medC++;
+      }
+    }
+  });
+  document.getElementById("sAnswered").textContent = answered;
+  document.getElementById("sCorrect").textContent = correct;
+  document.getElementById("sEasy").textContent = easyC;
+  document.getElementById("sMed").textContent = medC;
+  const done = document.getElementById("doneMsg");
+  if (answered === TOTAL) {
+    done.classList.remove("hidden");
+    done.textContent = "All 22 questions answered — Final score: " + correct + "/" + TOTAL +
+      " (Easy " + easyC + "/10 · Medium " + medC + "/12). " +
+      (correct === TOTAL ? "Perfect! 考试稳了。" : "复习错题对应的知识点后，点上方 Reset Quiz 再战一次！");
+  } else {
+    done.classList.add("hidden");
+  }
+}
+
+document.getElementById("btnReset").addEventListener("click", render);
+render();
+</script>
+</body>
+</html>

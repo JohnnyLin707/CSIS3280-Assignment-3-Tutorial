@@ -37,8 +37,11 @@
   .add{background:var(--add)} .rep{background:var(--rep)} .keep{background:var(--keep)}
   .note{background:#fff8e6;border:1px solid #f1d38a;border-radius:8px;padding:10px 14px;font-size:13.5px;margin:10px 0}
   .path{color:var(--muted);font-size:13px}
-  a.cta{display:inline-block;margin-top:16px;padding:10px 24px;background:#fff;color:var(--blue);border-radius:24px;text-decoration:none;font-weight:600;font-size:15px;box-shadow:0 2px 10px rgba(0,0,0,.18);transition:transform .15s ease,box-shadow .15s ease}
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+  a.cta{display:inline-block;padding:10px 24px;background:#fff;color:var(--blue);border-radius:24px;text-decoration:none;font-weight:600;font-size:15px;box-shadow:0 2px 10px rgba(0,0,0,.18);transition:transform .15s ease,box-shadow .15s ease}
   a.cta:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.22)}
+  a.cta-alt{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.75);box-shadow:none}
+  a.cta-alt:hover{background:rgba(255,255,255,.12);box-shadow:none}
   footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:30px}
 </style>
 </head>
@@ -48,7 +51,10 @@
   <div class="wrap">
     <h1>Assignment 3 Tutorial — Building the PHP Web App (Auth + Validated Form + CSV File I/O)</h1>
     <p>This walkthrough explains exactly how the project was completed: which files were modified, what changed in each one, which original code was replaced (and why, and where), and how the static pages in <code>html_examples</code> were adapted into the working templates in <code>templates</code>.</p>
-    <a class="cta" href="assign3-step-by-step-zh.html">保姆级做题教程（中文版）→</a>
+    <div class="cta-row">
+      <a class="cta" href="assign3-step-by-step-zh.html">保姆级做题教程（中文版）→</a>
+      <a class="cta cta-alt" href="quiz.html">Practice Quiz（预测考题 · 选择题）→</a>
+    </div>
   </div>
 </header>
 
