@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week06 OOP Coding Lab — Predicted Exam Programming Questions</title>
+<style>
+  :root{
+    --blue:#0d6efd; --ink:#1f2933; --muted:#5b6b79; --line:#e3e8ee;
+    --bg:#f7f9fb; --card:#ffffff; --code:#0f172a; --codeInk:#dbe4f0;
+    --amber:#d97706; --emerald:#0a7d43; --violet:#7c3aed; --violetSoft:#f5f3ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 20px 70px}
+  header.top{background:linear-gradient(135deg,#0b5ed7,#0d6efd);color:#fff;padding:32px 0 26px}
+  header.top h1{margin:0 0 8px;font-size:26px}
+  header.top p{margin:0;opacity:.92;font-size:14.5px}
+  .backbar{margin-bottom:14px}
+  .backbar a{color:#fff;opacity:.92;margin-right:20px;font-size:13.5px;text-decoration:none;border-bottom:1px dotted rgba(255,255,255,.6)}
+  .backbar a:hover{opacity:1}
+  .plan{background:#fffdf7;border:1px solid #f1d38a;border-radius:12px;padding:14px 18px;font-size:13.8px;margin-top:26px}
+  .plan b{color:var(--amber)}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:var(--muted)}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .qcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin-top:26px}
+  .qhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  .qnum{background:var(--violet);color:#fff;border-radius:6px;padding:2px 10px;font-size:13px;font-weight:700}
+  .qtitle{font-weight:700;font-size:17px}
+  .src{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:2px 10px;background:#fafbfd}
+  .stmt{border-radius:8px;padding:12px 15px;font-size:14px;line-height:1.75}
+  .stmt.en{background:#eef6ff;border:1px solid #cfe0f5}
+  .stmt.zh{background:#f8fafc;border:1px solid var(--line);margin-top:8px;color:#37506b}
+  .stmt .lbl{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted);display:block;margin-bottom:3px}
+  .chips{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+  .chips span{background:var(--violetSoft);border:1px solid #ddd3f5;color:var(--violet);border-radius:14px;padding:3px 11px;font-size:12px}
+  .step{margin-top:20px}
+  .stephead{font-weight:700;font-size:14.5px;margin-bottom:8px}
+  .stephead span{color:var(--muted);font-weight:400;font-size:12.5px}
+  .codegrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .pane{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
+  .panelabel{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:7px 13px;border-bottom:1px solid var(--line)}
+  .pane.left .panelabel{background:#fdf6e9;color:var(--amber)}
+  .pane.right .panelabel{background:#e9f9f0;color:var(--emerald)}
+  .ins{padding:10px 14px;font-size:13px;line-height:1.7;background:#fffdf7;border-bottom:1px dashed var(--line)}
+  .ins b{color:var(--amber)}
+  pre{margin:0;background:var(--code);color:var(--codeInk);padding:14px 16px;overflow-x:auto;font-size:12.5px;line-height:1.68;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre code{background:none;border:none;color:inherit;padding:0;font-family:inherit}
+  .todo{color:#fbbf24;font-weight:600}
+  .why{color:#6ee7b7}
+  .cm{color:#7dd3fc}
+  .hint{background:#f5f3ff;border:1px solid #ddd3f5;border-radius:10px;padding:12px 16px;font-size:13.5px;margin-top:14px}
+  .hint b{color:var(--violet)}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px}
+  footer a{color:var(--blue);text-decoration:none}
+  @media (max-width:900px){
+    .codegrid{grid-template-columns:1fr}
+    .backbar a{margin-right:12px}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="backbar">
+      <a href="index.html">&larr; Back to Tutorial Home</a>
+      <a href="quiz.html">Practice Quiz（选择题）</a>
+      <a href="assign3-step-by-step-zh.html">保姆级做题教程</a>
+    </div>
+    <h1>Week06 OOP Coding Lab — Predicted Exam Programming Questions</h1>
+    <p>考前辅导员安排：3 道编程题，与老师 week06 demo 的三种出题形态一一对应 —— CH18「写一个完整的类」、CH19 demo1「抽象类 + 继承」、CH19 demo2「构造增强 + 方法重写」。每一步左侧是老师风格的代码框架（含中英文指示与 TODO），右侧是参考补全，中文注释解释每一步为什么这样写。</p>
+    <div class="legend">
+      <span><i style="background:#fdf6e9;border:1px solid var(--amber)"></i>左栏 = Teacher's Framework（老师给的框架 + TODO）</span>
+      <span><i style="background:#e9f9f0;border:1px solid var(--emerald)"></i>右栏 = Solution（参考补全）</span>
+      <span><i style="background:#fbbf24"></i>TODO 待补全</span>
+      <span><i style="background:#6ee7b7"></i>【为什么】中文注释</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="plan">
+    <b>考前辅导员建议：</b>为什么是 3 题？老师 demo 只教了三种"出题形态"，考试基本从中选型 —— ① 给属性列表让你写一个完整类（送分主线，CH18）；② 给抽象类 + 子类考继承与 protected/private 区别（CH19 demo1）；③ 考 <code>parent::__construct</code>、重写 <code>__toString</code>、子类新增方法（CH19 demo2）。做题方法：先用纸/编辑器只看左栏自己写，写完再对照右栏，重点读绿色【为什么】注释。每题约 15–20 分钟。
+  </div>
+
+  <!-- ================= Q1 ================= -->
+  <section class="qcard" id="q1">
+    <div class="qhead">
+      <span class="qnum">Q1</span>
+      <span class="qtitle">Book — Class Basics（写一个完整的类）</span>
+      <span class="src">based on CH18 · src/Book.php + public/index.php</span>
+    </div>
+    <div class="stmt en">
+      <span class="lbl">English</span>
+      Write a class <code>Book</code> following the Product demo exactly: two private properties <code>$title</code> (string) and <code>$price</code> (float); a constructor receiving <code>(float $price, string $title)</code> that assigns through the setters; a <code>__toString()</code> returning <code>(Book) title: ... and price ...</code>; full getters/setters where <code>setPrice()</code> refuses negative prices. Then test in <code>public/index.php</code>: create one book with <code>(0,'')</code> + setters, call <code>setPrice(-100)</code>, create a second book via the constructor, and print both objects.
+    </div>
+    <div class="stmt zh">
+      <span class="lbl">中文题目</span>
+      完全仿照 Product demo 写一个 <code>Book</code> 类：两个私有属性 <code>$title</code>(string)、<code>$price</code>(float)；构造函数参数顺序为 <code>(float $price, string $title)</code>，内部通过 setter 赋值；<code>__toString()</code> 返回 <code>(Book) title: ... and price ...</code>；完整 getter/setter，其中 <code>setPrice()</code> 拒绝负数价格。最后在 <code>public/index.php</code> 测试：先用 <code>(0,'')</code> + setter 创建一本书、调用 <code>setPrice(-100)</code> 观察结果、再用构造函数创建第二本，并 print 两个对象。
+    </div>
+    <div class="chips">
+      <span>private 属性</span><span>构造函数</span><span>setter 验证</span><span>__toString</span><span>new 实例化</span>
+    </div>
+
+    <div class="step">
+      <div class="stephead">Step 1 · Class skeleton &amp; properties <span>类骨架与私有属性</span></div>
+      <div class="codegrid">
+        <div class="pane left">
+          <div class="panelabel">Teacher's Framework · 老师给的框架</div>
+          <div class="ins"><b>EN:</b> Declare the two private properties with type declarations — one string, one float.<br><b>中文：</b>用类型声明写出两个私有属性（一个 string、一个 float），private 表示只有类内部能直接访问。</div>
+<pre><code>&lt;?php
+class Book
+{
+    <span class="cm">// property</span>
+    <span class="todo">// TODO: declare two private properties with types</span>
+    <span class="todo">//       $title (string) and $price (float)</span>
+
+    <span class="cm">// magic method</span>
+    <span class="cm">// constructor</span>
+    <span class="todo">// TODO: constructor goes here (Step 2)</span>
+
+    <span class="cm">// toString</span>
+    <span class="todo">// TODO: __toString goes here (Step 2)</span>
+
+    <span class="cm">// getter and setter</span>
+    <span class="todo">// TODO: four methods go here (Step 3)</span>
+
+    <span class="cm">// custom methods</span>
+
+
+
+}</code></pre>
+        </div>
+        <div class="pane right">
+          <div class="panelabel">Solution · 参考补全（中文注释 = 为什么）</div>
+<pre><code>&lt;?php
+class Book
+{
+    <span class="cm">// property</span>
+    <span class="why">// 【为什么】属性全部 private：外部只能通过 getter/setter 读写（封装）</span>
+    <span class="why">// 【为什么】带类型声明 string / float，与老师 Product demo 完全同款</span>
+    private string $title;
+    private float $price;
+
+    <span class="cm">// magic method</span>
+    <span class="cm">// constructor</span>
+    <span class="cm">// （Step 2 补全）</span>
+
+    <span class="cm">// toString</span>
+    <span class="cm">// （Step 2 补全）</span>
+
+    <span class="cm">// getter and setter</span>
+    <span class="cm">// （Step 3 补全）</span>
+
+    <span class="cm">// custom methods</span>
+
+
+
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="stephead">Step 2 · Constructor &amp; __toString <span>构造函数与魔术方法</span></div>
+      <div class="codegrid">
+        <div class="pane left">
+          <div class="panelabel">Teacher's Framework · 老师给的框架</div>
+          <div class="ins"><b>EN:</b> Write the constructor (price first, title second) and __toString(); assign through the setters, not directly.<br><b>中文：</b>写构造函数（参数顺序 price 在前、title 在后）与 __toString()；构造函数内部不要直接赋值，要调用 setter。</div>
+<pre><code>    <span class="cm">// magic method</span>
+    <span class="cm">// constructor</span>
+    <span class="todo">// TODO: write the constructor here — price first, title second</span>
+    <span class="todo">//       (assign through the setters, not directly)</span>
+
+    <span class="cm">// toString</span>
+    <span class="todo">// TODO: write __toString() here — format:</span>
+    <span class="todo">//       (Book) title: xxx and price yyy</span></code></pre>
+        </div>
+        <div class="pane right">
+          <div class="panelabel">Solution · 参考补全（中文注释 = 为什么）</div>
+<pre><code>    <span class="cm">// magic method</span>
+    <span class="cm">// constructor</span>
+    <span class="why">// 【为什么】new Book(25.5, 'PHP Basics') 时构造函数自动执行，不用手动调用</span>
+    <span class="why">// 【为什么】参数顺序照抄老师 Product demo：price 在前、title 在后</span>
+    public function __construct(float $price, string $title)
+    {
+        <span class="why">// 【为什么】不写 $this->price = $price，而是走 setter：</span>
+        <span class="why">// 【为什么】验证逻辑只写一处，构造和外部赋值走同一条路</span>
+        $this->setPrice($price);
+        $this->setTitle($title);
+    }
+    <span class="cm">// toString</span>
+    <span class="why">// 【为什么】print $book 时对象被当作字符串 → PHP 自动调用 __toString()</span>
+    <span class="why">// 【为什么】拼接写法照抄老师：' . ... . '，保持同款空格</span>
+    public function __toString()
+    {
+        return '(Book) title: ' . $this->title . ' and price '. $this->price;
+    }</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="stephead">Step 3 · Getters &amp; setters with validation <span>访问器与验证</span></div>
+      <div class="codegrid">
+        <div class="pane left">
+          <div class="panelabel">Teacher's Framework · 老师给的框架</div>
+          <div class="ins"><b>EN:</b> Write the four accessor methods. setPrice() must refuse negative prices (silently — no error).<br><b>中文：</b>写 4 个 getter/setter；setPrice() 拒绝负数价格（静默拒绝，不报错也不赋值）。</div>
+<pre><code>    <span class="cm">// getter and setter</span>
+    <span class="todo">// TODO: setTitle / getTitle</span>
+    <span class="todo">// TODO: setPrice (refuse $price &lt; 0) / getPrice</span></code></pre>
+        </div>
+        <div class="pane right">
+          <div class="panelabel">Solution · 参考补全（中文注释 = 为什么）</div>
+<pre><code>    <span class="cm">// getter and setter</span>
+    <span class="why">// 【为什么】命名必须是 getXxx / setXxx —— 老师按这个规范写，考试也按这个给分</span>
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    <span class="why">// 【为什么】验证写在 setter 里（封装的核心）：条件不满足就什么都不做</span>
+    <span class="why">// 【为什么】→ 静默拒绝：不报错、不赋值，原值保持不变</span>
+    <span class="why">// 【为什么】写法照抄老师 demo：if($price >=0){ 花括号直接跟在后面</span>
+    public function setPrice(float $price): void
+    {
+        if($price >=0){
+            $this->price = $price;
+        }
+    }
+    public function getPrice(): float
+    {
+        return $this->price;
+    }</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="stephead">Step 4 · Test in index.php <span>实例化与输出测试</span></div>
+      <div class="codegrid">
+        <div class="pane left">
+          <div class="panelabel">Teacher's Framework · 老师给的框架</div>
+          <div class="ins"><b>EN:</b> Test in public/index.php: create a book with (0,'') and setters; try setPrice(-100); create a second book via the constructor; print the price and both objects.<br><b>中文：</b>在 public/index.php 测试：先 (0,'') + setter 创建、调 setPrice(-100)、再构造函数创建第二本，print 价格和两个对象。</div>
+<pre><code>&lt;?php
+
+require_once '../src/Book.php';
+
+<span class="cm">// instantiate a new object</span>
+<span class="todo">// TODO: create one Book with (0,'') and fill it with setters</span>
+<span class="todo">// TODO: call setPrice(-100) and think: what happens?</span>
+<span class="todo">// TODO: create $book2 = new Book(25.5, 'PHP Basics');</span>
+
+<span class="todo">// TODO: print the price with getPrice() and print both objects</span></code></pre>
+        </div>
+        <div class="pane right">
+          <div class="panelabel">Solution · 参考补全（中文注释 = 为什么）</div>
+<pre><code>&lt;?php
+
+require_once '../src/Book.php';
+
+<span class="cm">// instantiate a new object</span>
+<span class="why">// 【为什么】第一本用 (0,'') 占位再逐个 setter —— 与老师 CH18 demo 相同写法</span>
+$book = new Book(0,'');
+$book->setTitle('PHP Basics');
+$book->setPrice(25.5);
+$book->setPrice(-100);
+<span class="why">// 【为什么】setPrice(-100) 不报错也不生效：if($price >=0) 不满足直接跳过</span>
+<span class="why">// 【为什么】价格仍然是 25.5 —— 这是考试最爱问的"为什么"</span>
+
+$book2 = new Book(25.5, 'PHP Basics');
+<span class="why">// 【为什么】第二本直接用构造函数 —— 两条赋值路最终都经过同一个 setter</span>
+
+print "Book price is {$book->getPrice()}\n";
+<span class="why">// 【为什么】双引号字符串里 {$...} 可以放方法调用；\n 记得写，老师 demo 都带</span>
+
+print "The object book is {$book}\n";
+print "The object book is {$book2}";
+<span class="why">// 【为什么】对象放进字符串 → 自动触发 __toString()</span>
+<span class="why">// 【为什么】输出 (Book) title: PHP Basics and price 25.5</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Q2 ================= -->
+  <section class="qcard" id="q2">
+    <div class="qhead">
+      <span class="qnum">Q2</span>
+      <span class="qtitle">Employee → Manager — Inheritance（抽象类与继承）</span>
+      <span class="src">based on CH19 demo1 · src/Employee.php + src/Manager.php</span>
+    </div>
+    <div class="stmt en">
+      <span class="lbl">English</span>
+      Create an <code>abstract class Employee</code> (src/Employee.php): <code>protected string $name</code> and <code>private float $salary</code> with full getters/setters. Then write <code>class Manager extends Employee</code> (src/Manager.php) that adds <code>public int $teamSize</code> and a method <code>getManagerInfo()</code> returning <code>"{$this->name}, {$this->teamSize}"</code> (no return type, same style as <code>getMakeModelShape()</code>). Explain in comments why <code>$name</code> must be protected. Test in <code>public/index.php</code>: try <code>new Employee()</code> first, then create a Manager and use the inherited setters.
+    </div>
+    <div class="stmt zh">
+      <span class="lbl">中文题目</span>
+      写抽象类 <code>Employee</code>：protected string <code>$name</code> 与 private float <code>$salary</code>，带完整 getter/setter。再写子类 <code>Manager extends Employee</code>：新增 <code>public int $teamSize</code> 与方法 <code>getManagerInfo()</code>，返回 <code>"{$this->name}, {$this->teamSize}"</code>（不写返回类型，与老师 getMakeModelShape() 同风格）。用注释说明 <code>$name</code> 为什么必须是 protected。最后在 <code>public/index.php</code> 测试：先试 <code>new Employee()</code> 看报错，再 new Manager() 用继承来的 setter 完成赋值。
+    </div>
+    <div class="chips">
+      <span>abstract class</span><span>extends 继承</span><span>protected vs private</span><span>继承方法调用</span><span>实例化限制</span>
+    </div>
+
+    <div class="step">
+      <div class="stephead">Step 1 · Abstract class Employee <span>抽象类与可见性选择</span></div>
+      <div class="codegrid">
+        <div class="pane left">
+          <div class="panelabel">Teacher's Framework · 老师给的框架</div>
+          <div class="ins"><b>EN:</b> Write the abstract class: one protected string property the subclass WILL need, one private float property it will NOT need, plus full getters/setters.<br><b>中文：</b>写抽象类：一个子类会用到的 protected string 属性、一个子类用不到的 private float 属性，并写完整 getter/setter。</div>
+<pre><code>&lt;?php
+abstract class Employee
+{
+    <span class="todo">// TODO: protected string $name   — the subclass WILL need it</span>
+    <span class="todo">// TODO: private float $salary    — the subclass does NOT need it</span>
+    <span class="todo">// TODO: full getters and setters for both</span>
+}</code></pre>
+        </div>
+        <div class="pane right">
+          <div class="panelabel">Solution · 参考补全（中文注释 = 为什么）</div>
+<pre><code>&lt;?php
+abstract class Employee
+{
+    <span class="why">// 【为什么】name 用 protected：题目要求子类 Manager 的方法里写 $this->name</span>
+    <span class="why">// 【为什么】这正是老师 Vehicle demo 的设计 —— Car 要用 makeModel，所以它是 protected</span>
+    protected string $name;
+
+    <span class="why">// 【为什么】salary 子类用不到 → private 更安全（最小可见范围原则）</span>
+    <span class="why">// 【为什么】这一对 protected/private 的选择本身就是考点</span>
+    private float $salary;
+
+    <span class="why">// 【为什么】抽象类不能 new，但属性和普通方法照常写</span>
+    <span class="why">// 【为什么】签名照抄老师：: string / : void / : float</span>
+    public function getName(): string
+    {
+        return $this->name;
+    }
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+    public function getSalary(): float
+    {
+        return $this->salary;
+    }
+    public function setSalary(float $salary): void
+    {
+        $this->salary = $salary;
+    }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="stephead">Step 2 · Subclass Manager <span>子类继承与扩展</span></div>
+      <div class="codegrid">
+        <div class="pane left">
+          <div class="panelabel">Teacher's Framework · 老师给的框架</div>
+          <div class="ins"><b>EN:</b> Write class Manager extends Employee: add public int $teamSize and getManagerInfo() returning "{$this->name}, {$this->teamSize}".<br><b>中文：</b>写子类 Manager：新增 public int $teamSize，方法 getManagerInfo() 返回 "{$this->name}, {$this->teamSize}"（不写返回类型）。</div>
+<pre><code>&lt;?php
+
+class Manager extends Employee{
+    <span class="todo">// TODO: public int $teamSize;</span>
+    <span class="todo">// TODO: getManagerInfo() — return "{$this->name}, {$this->teamSize}"</span>
+    <span class="todo">//       (no return type, same as the teacher's getMakeModelShape())</span>
+
+}</code></pre>
+        </div>
+        <div class="pane right">
+          <div class="panelabel">Solution · 参考补全（中文注释 = 为什么）</div>
+<pre><code>&lt;?php
+
+<span class="why">// 【为什么】花括号直接跟在类名后 —— 保持老师 class Car extends Vehicle{ 的原样风格</span>
+class Manager extends Employee{
+    <span class="why">// 【为什么】子类新增自己的属性（对父类的第一次"扩展"）</span>
+    <span class="why">// 【为什么】public → 类外可以直接 $manager->teamSize = 6 赋值</span>
+    public int $teamSize;
+
+    <span class="why">// 【为什么】不写返回类型 —— 老师的 getMakeModelShape() 就没写，考试照这个风格</span>
+    <span class="why">// 【为什么】$this->name 能访问是因为父类里它是 protected；</span>
+    <span class="why">// 【为什么】换成 $this->salary 就会致命错误（private 子类不可见）</span>
+    public function getManagerInfo(){
+        return "{$this->name}, {$this->teamSize}";
+    }
+
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="stephead">Step 3 · Test in index.php <span>抽象类不能 new</span></div>
+      <div class="codegrid">
+        <div class="pane left">
+          <div class="panelabel">Teacher's Framework · 老师给的框架</div>
+          <div class="ins"><b>EN:</b> Test: try new Employee() first, then create a Manager, use the inherited setters, set teamSize, and print.<br><b>中文：</b>测试：先试 new Employee() 看报错，再创建 Manager，用继承的 setter 赋值、teamSize 直接赋值，最后 print。</div>
+<pre><code>&lt;?php
+
+require_once '../src/Employee.php';
+require_once '../src/Manager.php';
+
+<span class="todo">// TODO: try $e = new Employee(); first — what error do you get?</span>
+<span class="todo">// TODO: then create a Manager, use setName/setSalary from the parent,</span>
+<span class="todo">//       set teamSize directly, and print getManagerInfo()</span></code></pre>
+        </div>
+        <div class="pane right">
+          <div class="panelabel">Solution · 参考补全（中文注释 = 为什么）</div>
+<pre><code>&lt;?php
+
+require_once '../src/Employee.php';
+require_once '../src/Manager.php';
+
+<span class="cm">// $e = new Employee();</span>
+<span class="why">// 【为什么】这行会报错：Cannot instantiate abstract class Employee</span>
+<span class="why">// 【为什么】—— 抽象类只能被继承，不能被 new（先试再注释掉）</span>
+
+$manager = new Manager();
+<span class="why">// 【为什么】子类没写构造函数 → PHP 自动给默认构造函数，可以直接 new</span>
+
+$manager->setName('Johnny');
+<span class="why">// 【为什么】setName 是从 Employee 继承来的 public 方法，子类对象直接用</span>
+$manager->setSalary(5000.0);
+
+$manager->teamSize = 6;
+<span class="why">// 【为什么】teamSize 是 public → 类外可以像普通变量一样直接赋值</span>
+<span class="why">// 【为什么】（对比：$manager->name = ... 就不行，name 是 protected）</span>
+
+print $manager->getManagerInfo();
+<span class="why">// 【为什么】输出：Johnny, 6</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Q3 ================= -->
+  <section class="qcard" id="q3">
+    <div class="qhead">
+      <span class="qnum">Q3</span>
+      <span class="qtitle">Beverage → Latte — Augmentation &amp; Promotion（构造增强与重写）</span>
+      <span class="src">based on CH19 demo2 · src/Beverage.php + src/Latte.php</span>
+    </div>
+    <div class="stmt en">
+      <span class="lbl">English</span>
+      Create <code>class Beverage</code> (src/Beverage.php): <code>protected string $name</code>, a constructor storing <code>$name</code>, and <code>__toString(): string</code> returning <code>"(BEVERAGE) $this->name"</code>. Then write <code>class Latte extends Beverage</code> (src/Latte.php) with <code>private int $shots</code>; its constructor <code>(string $name, int $shots)</code> must call <code>parent::__construct($name)</code> first, then <code>setShots()</code>; override <code>__toString(): string</code> to call <code>parent::__toString()</code> and append <code>"I am a Latte with {$this->shots} espresso shots"</code>; add the promotion method <code>setShots(int $shots)</code>. Test with <code>print $drink;</code> and <code>var_dump($drink);</code>.
+    </div>
+    <div class="stmt zh">
+      <span class="lbl">中文题目</span>
+      写 <code>Beverage</code> 类：protected string <code>$name</code>、构造函数直接存值、<code>__toString(): string</code> 返回 <code>"(BEVERAGE) $this->name"</code>。再写子类 <code>Latte extends Beverage</code>：private int <code>$shots</code>；构造函数 <code>(string $name, int $shots)</code> 先调 <code>parent::__construct($name)</code> 再调 <code>setShots()</code>；重写 <code>__toString(): string</code> 先调 <code>parent::__toString()</code> 再用 <code>.=</code> 追加 <code>"I am a Latte with {$this->shots} espresso shots"</code>；新增 promotion 方法 <code>setShots(int $shots)</code>。最后 <code>print $drink;</code> 和 <code>var_dump($drink);</code> 测试。
+    </div>
+    <div class="chips">
+      <span>parent::__construct</span><span>augmentation 增强</span><span>__toString 重写</span><span>promotion 扩展</span><span>var_dump 看继承结构</span>
+    </div>
+
+    <div class="step">
+      <div class="stephead">Step 1 · Base class Beverage <span>父类（对照老师 Food demo）</span></div>
+      <div class="codegrid">
+        <div class="pane left">
+          <div class="panelabel">Teacher's Framework · 老师给的框架</div>
+          <div class="ins"><b>EN:</b> Write class Beverage: protected string $name, a constructor storing it directly, and __toString(): string.<br><b>中文：</b>写 Beverage 类：protected string $name、构造函数直接存值、__toString(): string 返回 "(BEVERAGE) $this->name"。</div>
+<pre><code>&lt;?php
+class Beverage
+{
+    <span class="todo">// TODO: protected string $name;</span>
+    <span class="todo">// TODO: __construct(string $name) — store it directly</span>
+    <span class="todo">// TODO: __toString(): string — return "(BEVERAGE) $this->name"</span>
+}</code></pre>
+        </div>
+        <div class="pane right">
+          <div class="panelabel">Solution · 参考补全（中文注释 = 为什么）</div>
+<pre><code>&lt;?php
+class Beverage
+{
+    <span class="why">// 【为什么】name 用 protected：子类 Latte 的重写方法要用 $this->name</span>
+    <span class="why">// 【为什么】与老师 Food demo 的 protected string $name 完全一致</span>
+    protected string $name;
+
+    <span class="why">// 【为什么】父类构造函数只初始化自己的属性 —— 直接赋值即可（Food demo 同款）</span>
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
+
+    <span class="why">// 【为什么】返回类型 : string 与老师 demo 相同</span>
+    <span class="why">// 【为什么】双引号里 $this->name 直接解析（老师写法："(FOOD) $this->name"）</span>
+    public function __toString(): string
+    {
+        return "(BEVERAGE) $this->name";
+    }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="stephead">Step 2 · Latte constructor (augmentation) <span>子类构造与增强</span></div>
+      <div class="codegrid">
+        <div class="pane left">
+          <div class="panelabel">Teacher's Framework · 老师给的框架</div>
+          <div class="ins"><b>EN:</b> Write class Latte extends Beverage with private int $shots; the constructor must call parent::__construct($name) FIRST, then setShots().<br><b>中文：</b>写子类 Latte：private int $shots；构造函数必须先调 parent::__construct($name)，再调 setShots()。</div>
+<pre><code>&lt;?php
+
+class Latte extends Beverage
+{
+    <span class="todo">// TODO: private int $shots;</span>
+    <span class="todo">// TODO: __construct(string $name, int $shots)</span>
+    <span class="todo">//       — call parent::__construct($name) first, then $this->setShots($shots)</span>
+    <span class="todo">// TODO: setShots(int $shots) — the promotion method</span>
+}</code></pre>
+        </div>
+        <div class="pane right">
+          <div class="panelabel">Solution · 参考补全（中文注释 = 为什么）</div>
+<pre><code>&lt;?php
+
+class Latte extends Beverage
+{
+    private int $shots;
+
+    <span class="why">// 【为什么】子类参数比父类多一个 → 先 parent::__construct($name)</span>
+    <span class="why">// 【为什么】让父类把 $name 初始化好，子类只管自己的新参数</span>
+    <span class="why">// 【为什么】这就是老师注释里的 augmentation（增强）</span>
+    <span class="why">// 【为什么】漏掉这行 = Latte 对象里没有 name —— 考试常见扣分坑</span>
+    public function __construct(string $name, int $shots)
+    {
+        parent::__construct($name);
+        $this->setShots($shots);
+    }
+
+    <span class="why">// 【为什么】setShots 是子类新增的方法，父类没有 → promotion（扩展）</span>
+    <span class="why">// 【为什么】构造函数里也走 setter，保持"赋值只走一条路"的写法</span>
+    <span class="why">// 【为什么】与老师 setCalories(int $calories) 同款：不写返回类型</span>
+    public function setShots(int $shots)
+    {
+        $this->shots = $shots;
+    }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="stephead">Step 3 · Override __toString <span>重写并拼接父类输出</span></div>
+      <div class="codegrid">
+        <div class="pane left">
+          <div class="panelabel">Teacher's Framework · 老师给的框架</div>
+          <div class="ins"><b>EN:</b> Inside class Latte, override __toString(): string — first get the parent message via parent::__toString(), then append the shots line with .=, then return it.<br><b>中文：</b>在 Latte 类内重写 __toString(): string —— 先用 parent::__toString() 拿父类输出，再用 .= 追加卡路里/浓缩杯数那句话，最后 return。</div>
+<pre><code>    <span class="cm">// ↓ add inside class Latte</span>
+    <span class="todo">// TODO: __toString(): string</span>
+    <span class="todo">//       1) get parent's message via parent::__toString()</span>
+    <span class="todo">//       2) append the shots line with .=</span>
+    <span class="todo">//       3) return the combined message</span></code></pre>
+        </div>
+        <div class="pane right">
+          <div class="panelabel">Solution · 参考补全（中文注释 = 为什么）</div>
+<pre><code>    <span class="why">// 【为什么】重写 = 子类方法与父类同名 → 调用时子类版本生效</span>
+    <span class="why">// 【为什么】不调 parent::__toString() 就丢失父类那段输出 —— 考试常见扣分点</span>
+    public function __toString(): string
+    {
+        <span class="why">// 【为什么】先拿父类的 "(BEVERAGE) Latte"（augmentation 第一步）</span>
+        $message = parent::__toString();
+
+        <span class="why">// 【为什么】.= 在后面拼接子类自己的信息（老师 Dessert demo 原样写法）</span>
+        <span class="why">// 【为什么】{$this->shots} 能访问是因为 shots 是 Latte 自己的 private</span>
+        $message .= "I am a Latte with {$this->shots} espresso shots";
+        return $message;
+    }</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="stephead">Step 4 · Test in index.php <span>print 与 var_dump 验证</span></div>
+      <div class="codegrid">
+        <div class="pane left">
+          <div class="panelabel">Teacher's Framework · 老师给的框架</div>
+          <div class="ins"><b>EN:</b> Test: $drink = new Latte('Latte',2); then print $drink; and var_dump($drink); — check which property belongs to which class.<br><b>中文：</b>测试：创建 $drink = new Latte('Latte',2); 然后 print $drink; 和 var_dump($drink); —— 观察属性分别属于哪个类。</div>
+<pre><code>&lt;?php
+
+require_once '../src/Beverage.php';
+require_once '../src/Latte.php';
+
+<span class="todo">// TODO: create $drink = new Latte('Latte',2);</span>
+<span class="todo">// TODO: print $drink;</span>
+<span class="todo">// TODO: var_dump($drink); — look at which properties belong to which class</span></code></pre>
+        </div>
+        <div class="pane right">
+          <div class="panelabel">Solution · 参考补全（中文注释 = 为什么）</div>
+<pre><code>&lt;?php
+
+require_once '../src/Beverage.php';
+require_once '../src/Latte.php';
+
+$drink = new Latte('Latte',2);
+<span class="why">// 【为什么】两个参数：name 经 parent::__construct 交给父类，shots 交给子类 setter</span>
+
+print $drink;
+<span class="why">// 【为什么】自动触发 Latte::__toString() →</span>
+<span class="why">// 【为什么】输出 (BEVERAGE) LatteI am a Latte with 2 espresso shots</span>
+<span class="why">// 【为什么】（父类段 + 子类段连在一起，与老师 Dessert demo 输出结构相同）</span>
+
+var_dump($drink);
+<span class="why">// 【为什么】能看到继承结构：$name 在 Beverage（protected）、$shots 在 Latte（private）</span>
+<span class="why">// 【为什么】—— 老师 demo2 的最后一步就是这个，考试爱考"属性属于哪个类"</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint"><b>判分自查：</b>三题写完对照检查 —— ① 属性是否全部带类型声明且可见性选对（private / protected / public）；② 构造函数参数顺序与 demo 一致；③ setter 验证是否"静默拒绝"；④ 子类是否先 parent::__construct 再写自己的逻辑；⑤ __toString 重写是否保留了父类输出；⑥ print 输出格式是否与老师 demo 同构。</div>
+  </section>
+
+  <footer>Week06 OOP Coding Lab · Based on the teacher's CH18 / CH19 demos · <a href="index.html">Tutorial Home</a> · <a href="quiz.html">Practice Quiz</a></footer>
+</div>
+</body>
+</html>
